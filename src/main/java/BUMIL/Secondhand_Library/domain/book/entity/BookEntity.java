@@ -29,13 +29,13 @@ public class BookEntity {
 
     private String author;
 
-    private LocalDate pubDate;
+    private int pubDate;
 
     private String description;
 
     private String coverImg;
 
-    private Long kdc;
+    private String kdc;
 
     @OneToMany(mappedBy = "book", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
     private List<BoardEntity> boards;
