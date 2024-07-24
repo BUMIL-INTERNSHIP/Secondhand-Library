@@ -36,6 +36,12 @@ public class BoardEntity extends BasicEntity {
     @Column(name = "board_img",nullable = false)
     private String boardImg;
 
+    @Column
+    private String address;
+
+    @Column
+    private Long price;
+
 
 
 

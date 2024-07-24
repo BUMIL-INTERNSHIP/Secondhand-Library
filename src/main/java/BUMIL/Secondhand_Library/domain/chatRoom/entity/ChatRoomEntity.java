@@ -43,4 +43,12 @@ public class ChatRoomEntity {
     @OneToMany(mappedBy = "chatRoom", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
     private List<MessageEntity> messages;
 
+    public static ChatRoomEntity createChatRoom(BookEntity book,BoardEntity board,MemberEntity sender,MemberEntity receiver) {
+        return ChatRoomEntity.builder()
+                .book(book)
+                .board(board)
+                .sender(sender)
+                .receiver(receiver)
+                .build();
+    }
 }
