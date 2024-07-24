@@ -3,6 +3,7 @@ package BUMIL.Secondhand_Library.controller;
 
 import BUMIL.Secondhand_Library.domain.board.dto.BoardCreateDto;
 import BUMIL.Secondhand_Library.domain.board.dto.BoardResDto;
+import BUMIL.Secondhand_Library.domain.board.dto.BoardShortDto;
 import BUMIL.Secondhand_Library.domain.board.entity.BoardEntity;
 import BUMIL.Secondhand_Library.service.BoardService;
 import lombok.RequiredArgsConstructor;
@@ -16,6 +17,7 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 @RestController
 @RequestMapping("/boards")
@@ -31,14 +33,27 @@ public class BoardController {
     }
 
     @GetMapping
-    public ResponseEntity<List<BoardEntity>> getAllBoards() {
+    public ResponseEntity<List<BoardShortDto>> getAllBoards() {
         List<BoardEntity> boards = boardService.getAllBoards();
-        return ResponseEntity.ok(boards);
+        List<BoardShortDto> boardShortDtos = boards.stream().map(board -> {
+            return new BoardShortDto(
+                    board.getBook().getBookName(),
+                    board.getBoardTitle(),
+                    board.getBoardImg(),
+                    board.getAddress(),
+                    board.getPrice()
+            );
+        }).collect(Collectors.toList());
+
+        return ResponseEntity.ok(boardShortDtos);
     }
+
+
 
     @GetMapping("/{boardId}")
     public ResponseEntity<BoardResDto> getBoardById(@PathVariable Long boardId) {
         Optional<BoardEntity> board = boardService.getBoardById(boardId);
+
         return board.map(b -> ResponseEntity.ok(boardService.convertToDto(b)))
                 .orElseGet(() -> ResponseEntity.notFound().build());
     }

@@ -2,7 +2,9 @@ package BUMIL.Secondhand_Library.domain.board.entity;
 
 import BUMIL.Secondhand_Library.domain.book.entity.BookEntity;
 import BUMIL.Secondhand_Library.domain.member.entity.MemberEntity;
+import BUMIL.Secondhand_Library.global.CategoryEnum;
 import BUMIL.Secondhand_Library.global.basic.BasicEntity;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import lombok.*;
 
@@ -41,6 +43,9 @@ public class BoardEntity extends BasicEntity {
 
     @Column
     private Long price;
+
+    @Enumerated(EnumType.STRING)
+    private CategoryEnum category;
 
 
 }

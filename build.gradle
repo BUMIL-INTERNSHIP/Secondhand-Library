@@ -30,7 +30,8 @@ dependencies {
 	compileOnly 'org.projectlombok:lombok'
 
 	//DB
-	implementation 'org.postgresql:postgresql:42.7.2'
+	//implementation 'org.postgresql:postgresql:42.7.2'
+	runtimeOnly 'com.mysql:mysql-connector-j'
 
 	//gson
 	implementation 'com.google.code.gson:gson:2.10.1'
