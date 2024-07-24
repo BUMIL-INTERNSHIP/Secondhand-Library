@@ -9,6 +9,8 @@ import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
+import java.time.LocalDateTime;
+
 @Getter
 @NoArgsConstructor
 @AllArgsConstructor
@@ -31,5 +33,20 @@ public class MessageEntity extends BasicEntity {
 
     private String content;
 
+    @Builder
+    public MessageEntity(LocalDateTime createdAt, LocalDateTime updatedAt, ChatRoomEntity chatRoom, MemberEntity sender, String content) {
+        super(createdAt, updatedAt);
+        this.chatRoom = chatRoom;
+        this.sender = sender;
+        this.content = content;
+    }
+
+    public static MessageEntity createMessage(ChatRoomEntity chatRoom,MemberEntity sender,String content){
+        return MessageEntity.builder()
+                .chatRoom(chatRoom)
+                .sender(sender)
+                .content(content)
+                .build();
+    }
 
 }
