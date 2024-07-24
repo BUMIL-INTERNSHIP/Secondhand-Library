@@ -1,15 +1,16 @@
 spring:
   application:
     name: Secondhand-Library
-  jpa:
-    database: mysql
-    hibernate.ddl-auto: update
-    show-sql: true
   datasource:
-    driver-class-name: com.mysql.cj.jdbc.Driver
-    url: jdbc:mysql://localhost:3308/chat_service
-    username: root
-    password:
+    url: jdbc:postgresql://localhost:5432/secondhand_library
+    username: postgres
+    password: 0208
+    driver-class-name: org.postgresql.Driver
+  jpa:
+    show-sql: true
+    database: postgresql
+    hibernate:
+      ddl-auto: create
 
 aladdin:
   api:
