@@ -1,4 +1,4 @@
-package BUMIL.Secondhand_Library.domain.book.entity.controller;
+package BUMIL.Secondhand_Library.controller;
 
 import BUMIL.Secondhand_Library.domain.book.entity.APIClient.AladdinAPIClient;
 import BUMIL.Secondhand_Library.domain.book.entity.APIClient.LibraryAPIClient;
