@@ -4,11 +4,11 @@ import BUMIL.Secondhand_Library.domain.book.entity.BookEntity;
 import BUMIL.Secondhand_Library.domain.member.entity.MemberEntity;
 import BUMIL.Secondhand_Library.global.basic.BasicEntity;
 import jakarta.persistence.*;
-import lombok.AccessLevel;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
+import lombok.*;
 
-@Getter
+@Data
+@Builder
+@AllArgsConstructor
 @Entity
 @Table(name = "board")
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
@@ -41,13 +41,6 @@ public class BoardEntity extends BasicEntity {
 
     @Column
     private Long price;
-
-
-
-
-
-
-
 
 
 }
