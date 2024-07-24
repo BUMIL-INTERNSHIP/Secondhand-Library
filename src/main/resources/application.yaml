@@ -19,3 +19,14 @@ aladdin:
 library:
   api:
     key: "6cbf9798e0f9b2cb2d094901a7bc844cbf54e716d641ccab354f57e694dc8b91"
+
+#jwt
+jwt:
+  secret:
+    key: greenlemonTgreenlemonTgreenlemonTgreenlemonTgreenlemonTgreenlemonTgreenlemonT
+
+#kakao
+kakao:
+  auth:
+    client_id: 22b07a3b40ba23790d2c986f361a0cbf
+    redirect_uri: http://localhost:8080
