@@ -32,8 +32,8 @@ public class LibraryAPIClient {
         this.webClient = webClientBuilder.baseUrl(baseUri).build();
     }
 
-    public void initializePopularBooks(){
-        if (bookRepository.count() != 0) return;
+    public List<BookEntity> initializePopularBooks(){
+        if (bookRepository.count() != 0) return null;
 
         List<BookEntity> bookEntities = new ArrayList<>();
 
@@ -96,17 +96,16 @@ public class LibraryAPIClient {
             e.printStackTrace();
         }
 
-        bookRepository.saveAll(bookEntities);
+        return bookEntities;
     }
 
 
-    public void searchPopularBooks(String sex, String age, String location, String interest){
-        List<BookEntity> bookEntities = new ArrayList<>();
+    public List<BookEntity> searchPopularBooks(String sex, String age, String location, String interest){
+        List<BookEntity> newlyRecommendedBooks = new ArrayList<>(); //추천되었지만 디비에 존재하지않는 도서들
+        List<BookEntity> finalBookList = new ArrayList<>();//반환될 도서들
 
         LocalDate today = LocalDate.now(); //서버 시작일 기준 날짜
-
         int currentYear = today.getYear(); //서비 시작일 기준 년도
-
         LocalDate startYear = LocalDate.of(currentYear,1,1); //
 
         try {
@@ -142,32 +141,35 @@ public class LibraryAPIClient {
             Set<String> titles = new HashSet<>(); // Set to keep track of unique titles
 
             for (int i = 0; i < items.length(); i++) {
-                if (bookEntities.size() == 10) break; //10개의 도서만 추출
+                if (finalBookList.size() == 10) break; //10개의 도서만 추출
                 
                 JSONObject docObj = items.getJSONObject(i).getJSONObject("doc");
+                String bookName = docObj.getString("bookname");
                 // 중복된 도서가 나올 수 있기 때문에 set으로 중복되지 않은 도서만 추가한다.
-                if (!titles.contains(docObj.getString("bookname"))){
-                    String title = docObj.getString("bookname");
-                    String author = docObj.getString("authors");
-                    String pubDate = docObj.getString("publication_year");
-                    String coverImg = docObj.getString("bookImageURL");
-                    String kdc = docObj.getString("class_no");
-                    titles.add(title);
+                if (!titles.contains(bookName)){
+
+                    titles.add(bookName);
                     BookEntity bookEntity = BookEntity.builder()
-                            .bookName(title)
-                            .author(author)
-                            .pubDate(pubDate)
-                            .coverImg(coverImg)
-                            .kdc(kdc) // Convert to Long if necessary
+                            .bookName(docObj.getString("bookname"))
+                            .author(docObj.getString("authors"))
+                            .pubDate(docObj.getString("publication_year"))
+                            .coverImg( docObj.getString("bookImageURL"))
+                            .kdc(docObj.getString("class_no")) // Convert to Long if necessary
                             .build();
 
-                    bookEntities.add(bookEntity);
+                    //이미 DB에 존재하는인지 확인하고 중복된 데이터 방지
+                    if (bookRepository.existsByBookName(bookName)){
+                        finalBookList.add(bookEntity);
+                    }else{
+                        newlyRecommendedBooks.add(bookEntity);
+                        finalBookList.add(bookEntity);
+                    }
                 }
             }
+            bookRepository.saveAll(newlyRecommendedBooks);
         } catch (Exception e) {
             e.printStackTrace();
         }
-
-        bookRepository.saveAll(bookEntities);
+    return finalBookList;
     }
 }

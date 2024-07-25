@@ -1,22 +1,22 @@
 package BUMIL.Secondhand_Library.controller;
 
-import BUMIL.Secondhand_Library.domain.book.APIClient.AladdinAPIClient;
-import BUMIL.Secondhand_Library.domain.book.APIClient.LibraryAPIClient;
 import BUMIL.Secondhand_Library.domain.book.DTO.MemberSelectionDto;
 
-import BUMIL.Secondhand_Library.domain.book.Service.RecommendationService;
+import BUMIL.Secondhand_Library.domain.book.Service.BookService;
+import BUMIL.Secondhand_Library.domain.book.entity.BookEntity;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
+import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 
-import java.io.IOException;
+import java.util.List;
 
 @Controller
 @RequestMapping("/book")
 public class BookController {
 
     @Autowired
-    RecommendationService recommendationService;
+    BookService recommendationService;
 
 //    @GetMapping("/test/{bookName}")
 //    public String test(@PathVariable String bookName) throws IOException {
@@ -37,9 +37,14 @@ public class BookController {
     }
 
     @PostMapping("/recommendations")
-    public String recommendations(MemberSelectionDto memberSelectionDto){
-        recommendationService.searchPopularBooks(memberSelectionDto.getSex(),memberSelectionDto.getAge(),
-                memberSelectionDto.getLocation(),memberSelectionDto.getInterest());
-        return "Book/recommendations";
+    public String recommendations(MemberSelectionDto memberSelectionDto , Model model){
+        List<BookEntity> recommendedBooks = recommendationService.searchPopularBooks(
+                memberSelectionDto.getSex(),
+                memberSelectionDto.getAge(),
+                memberSelectionDto.getLocation(),
+                memberSelectionDto.getInterest()
+        );
+        model.addAttribute("recommendedBooks", recommendedBooks);
+        return "Book/recommendationsList";
     }
 }
