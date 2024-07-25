@@ -29,7 +29,7 @@ public class BookEntity {
 
     private String author;
 
-    private int pubDate;
+    private String pubDate;
 
     private String description;
 

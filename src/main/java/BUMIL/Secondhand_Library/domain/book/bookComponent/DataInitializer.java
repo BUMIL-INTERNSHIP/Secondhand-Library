@@ -1,6 +1,6 @@
-package BUMIL.Secondhand_Library.domain.book.entity.bookComponent;
+package BUMIL.Secondhand_Library.domain.book.bookComponent;
 
-import BUMIL.Secondhand_Library.domain.book.entity.APIClient.LibraryAPIClient;
+import BUMIL.Secondhand_Library.domain.book.APIClient.LibraryAPIClient;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.stereotype.Component;
@@ -13,6 +13,6 @@ public class DataInitializer implements CommandLineRunner {
 
     @Override
     public void run(String... args) throws Exception {
-        libraryAPIClient.searchPopularBooks();
+        libraryAPIClient.initializePopularBooks();
     }
 }

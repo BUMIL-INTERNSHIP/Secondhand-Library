@@ -1,6 +1,6 @@
-package BUMIL.Secondhand_Library.domain.book.entity.APIClient;
+package BUMIL.Secondhand_Library.domain.book.APIClient;
 
-import BUMIL.Secondhand_Library.domain.book.entity.Repository.BookRepository;
+import BUMIL.Secondhand_Library.domain.book.Repository.BookRepository;
 import org.json.JSONArray;
 import org.json.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
