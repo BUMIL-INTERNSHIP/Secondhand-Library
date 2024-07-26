@@ -1,5 +1,3 @@
-initMultiStepForm();
-
 function initMultiStepForm() {
     const progressNumber = document.querySelectorAll(".step").length;
     const slidePage = document.querySelector(".slide-page");
@@ -26,8 +24,7 @@ function initMultiStepForm() {
         nextButtons[i].addEventListener("click", function (event) {
             event.preventDefault();
 
-            inputsValid = validateInputs(this);
-            // inputsValid = true;
+            let inputsValid = validateInputs(this);
 
             if (inputsValid) {
                 slidePage.style.marginLeft = `-${
@@ -59,12 +56,10 @@ function initMultiStepForm() {
         progressText[current - 1].classList.add("active");
         current += 1;
 
-
-
-        // setTimeout(function () {
-        //     alert("Your Form Successfully Signed up");
-        //     location.reload();
-        // }, 800);
+        document.getElementById('loading').style.display = 'flex';  // 로딩 화면을 표시합니다.
+        setTimeout(() => {
+            document.querySelector('form').submit();  // 폼을 실제로 제출합니다.
+        }, 100);  // 약간의 지연을 줘서 로딩 화면이 표시될 시간을 확보합니다.
     });
 
     function validateInputs(ths) {
@@ -83,4 +78,15 @@ function initMultiStepForm() {
         }
         return inputsValid;
     }
+
+    document.querySelector('form').addEventListener('submit', function(event) {
+        event.preventDefault();  // 폼 제출을 방지합니다.
+        document.getElementById('loading').style.display = 'flex';  // 로딩 화면을 표시합니다.
+        setTimeout(() => {
+            // 폼을 실제로 제출합니다.
+            event.target.submit();
+        }, 100);  // 약간의 지연을 줘서 로딩 화면이 표시될 시간을 확보합니다.
+    });
 }
+
+initMultiStepForm();

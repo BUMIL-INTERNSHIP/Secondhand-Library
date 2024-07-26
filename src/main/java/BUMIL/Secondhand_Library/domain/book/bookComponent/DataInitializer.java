@@ -20,10 +20,10 @@ public class DataInitializer implements CommandLineRunner {
 
     @Override
     public void run(String... args) throws Exception {
-//        List<BookEntity> bookEntityList = libraryAPIClient.initializePopularBooks();
-//        if (bookEntityList != null){
-//            bookRepository.saveAll(bookEntityList);
-//        }
+        List<BookEntity> bookEntityList = libraryAPIClient.initializePopularBooks();
+        if (bookEntityList != null){
+            bookRepository.saveAll(bookEntityList);
+        }
 
     }
 }
