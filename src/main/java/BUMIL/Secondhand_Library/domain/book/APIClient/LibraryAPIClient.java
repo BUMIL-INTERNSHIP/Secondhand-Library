@@ -166,10 +166,11 @@ public class LibraryAPIClient {
                     }
                 }
             }
-            bookRepository.saveAll(newlyRecommendedBooks);
+            List<BookEntity> savedBooks =   bookRepository.saveAll(newlyRecommendedBooks);
+            return savedBooks;
         } catch (Exception e) {
             e.printStackTrace();
         }
-    return finalBookList;
+        return new ArrayList<>();
     }
 }
