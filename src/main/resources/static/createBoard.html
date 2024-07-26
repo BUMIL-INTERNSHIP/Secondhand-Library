@@ -97,10 +97,12 @@
     document.addEventListener('DOMContentLoaded', function() {
       const sellButton = document.getElementById('sell-button');
       const buyButton = document.getElementById('buy-button');
+      let selectedCategory = 'SELL';
 
       function selectButton(selectedButton, otherButton) {
         selectedButton.classList.add('selected');
         otherButton.classList.remove('selected');
+        selectedCategory = selectedButton.id === 'sell-button' ? 'SELL' : 'BUY';
       }
 
       sellButton.addEventListener('click', function() {
@@ -109,6 +111,43 @@
 
       buyButton.addEventListener('click', function() {
         selectButton(buyButton, sellButton);
+      });
+
+      document.querySelector('form').addEventListener('submit', function(event) {
+        event.preventDefault();
+
+        const bookTitle = document.getElementById('book-title').value;
+        const postTitle = document.getElementById('post-title').value;
+        const price = document.getElementById('price').value;
+        const location = document.getElementById('location').value;
+        const content = document.getElementById('content').value;
+
+        const boardCreateDto = {
+          category: selectedCategory,
+          bookName: bookTitle,
+          boardTitle: postTitle,
+          boardContent: content,
+          price: parseInt(price),
+          address: location
+        };
+
+        fetch('/boards', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json'
+          },
+          body: JSON.stringify(boardCreateDto)
+        })
+                .then(response => {
+                  if (response.ok) {
+                    window.location.href = '/boards'; // 게시글 목록 페이지로 리다이렉트
+                  } else {
+                    return response.json().then(err => {
+                      alert('오류가 발생했습니다: ' + err.message);
+                    });
+                  }
+                })
+                .catch(error => console.error('Error:', error));
       });
     });
   </script>
@@ -139,7 +178,7 @@
     <textarea id="content" name="content" placeholder="내용을 입력하세요" required></textarea>
 
     <div class="buttons">
-      <button type="submit">게시</button>
+      <button type="submit">등록</button>
     </div>
   </form>
 </div>

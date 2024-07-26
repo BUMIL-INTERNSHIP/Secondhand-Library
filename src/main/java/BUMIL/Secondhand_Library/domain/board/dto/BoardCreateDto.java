@@ -1,5 +1,6 @@
 package BUMIL.Secondhand_Library.domain.board.dto;
 
+import BUMIL.Secondhand_Library.global.CategoryEnum;
 import lombok.*;
 
 @Data
@@ -13,4 +14,5 @@ public class BoardCreateDto {
     private String boardContent;
     private String address;
     private Long price;
+    private CategoryEnum category;
 }

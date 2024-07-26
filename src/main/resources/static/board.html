@@ -27,12 +27,12 @@
     .header {
       text-align: center;
       padding-top: 20px;
-      padding-bottom: 20px; /* 공백 줄임 */
+      padding-bottom: 20px;
       border-bottom: 2px solid #b3daff;
     }
     .header h1 {
-      margin-top: 30px;
-      margin-bottom: 70px; /* 공백 줄임 */
+      margin-top: 20px;
+      margin-bottom: 20px;
       font-size: 2.5em;
     }
     .buttons-wrapper {
@@ -40,7 +40,7 @@
       justify-content: space-between;
       align-items: center;
       margin-top: 10px;
-      margin-bottom: 5px; /* 공백 줄임 */
+      margin-bottom: 10px;
     }
     .buttons input[type="text"] {
       width: 400px;
@@ -64,92 +64,92 @@
       transition: background-color 0.3s ease;
     }
     .buttons button.selected {
-      background-color: #ff6347;
+      background-color: #ff6347; /* 선택된 버튼의 배경색 */
     }
     .buttons button:hover, .register-button button:hover {
       background-color: #3399ff;
     }
-    .divider {
-      margin: 0;
-      border: 0;
-      border-top: 1px solid #b3daff;
-    }
     .post-list {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: space-between;
       margin-top: 20px;
     }
     .post {
+      width: 23%;
       padding: 10px;
-      margin-bottom: 10px;
+      margin-bottom: 20px;
       background-color: #ffffff;
       border: 1px solid #b3daff;
       border-radius: 5px;
       display: flex;
+      flex-direction: column;
       align-items: center;
+      box-sizing: border-box;
+      cursor: pointer;
+    }
+    .post:hover {
+      box-shadow: 0 0 15px rgba(0, 0, 0, 0.2);
     }
     .post-image {
-      width: 120px;
-      height: 180px;
+      width: 100%;
+      height: 500px;
       overflow: hidden;
       border-radius: 10px;
       border: 2px solid #4da6ff;
-      margin-right: 20px;
+      margin-bottom: 10px;
     }
     .post-image img {
       width: 100%;
       height: 100%;
       object-fit: cover;
     }
-    .post-content {
-      flex-grow: 1;
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-    }
     .post-title-group {
-      display: flex;
-      flex-direction: column;
-      margin-right: 20px;
+      text-align: center;
+      margin-bottom: 10px;
     }
     .post-title-group h2 {
       margin: 0;
-      font-size: 1.5em;
+      font-size: 1.2em;
       font-family: 'Gowun Batang', serif;
     }
     .post-title-group span {
       font-weight: bold;
       color: #333;
-      font-size: 1.1em;
+      font-size: 1em;
       font-family: 'Gowun Batang', serif;
-      margin-top: 30px; /* content와 bookName 사이 공백 추가 */
+      display: block;
+      margin-top: 5px;
     }
     .post-details {
       display: flex;
-      align-items: center;
+      justify-content: space-around;
+      width: 100%;
     }
     .post-details span {
       background-color: #4da6ff;
       color: white;
-      padding: 10px 20px;
+      padding: 10px 15px;
       border-radius: 20px;
-      margin-left: 10px;
-      font-size: 1.1em;
+      font-size: 0.9em;
       font-family: 'Gowun Batang', serif;
     }
   </style>
   <script>
     document.addEventListener('DOMContentLoaded', function() {
-      fetch('/boards')
-              .then(response => response.json())
-              .then(data => {
-                const postList = document.querySelector('.post-list');
-                data.forEach(post => {
-                  const postDiv = document.createElement('div');
-                  postDiv.classList.add('post');
-                  postDiv.innerHTML = `
-              <div class="post-image">
-                <img src="${post.boardImg || 'default-image.jpg'}" alt="게시글 이미지">
-              </div>
-              <div class="post-content">
+      const fetchData = (url) => {
+        fetch(url)
+                .then(response => response.json())
+                .then(data => {
+                  const postList = document.querySelector('.post-list');
+                  postList.innerHTML = ''; // 기존 게시글 목록 초기화
+                  data.forEach(post => {
+                    const postDiv = document.createElement('div');
+                    postDiv.classList.add('post');
+                    postDiv.innerHTML = `
+                <div class="post-image">
+                  <img src="${post.boardImg || 'default-image.jpg'}" alt="게시글 이미지">
+                </div>
                 <div class="post-title-group">
                   <h2 class="post-title">${post.boardTitle}</h2>
                   <span>책 제목: ${post.bookName || '정보 없음'}</span>
@@ -158,12 +158,37 @@
                   <span>주소: ${post.address || '정보 없음'}</span>
                   <span>가격: ${post.price ? post.price + ' 원' : '가격 미정'}</span>
                 </div>
-              </div>
-            `;
-                  postList.appendChild(postDiv);
-                });
-              })
-              .catch(error => console.error('Error fetching data:', error));
+              `;
+                    postDiv.addEventListener('click', () => {
+                      window.location.href = `/boardDetail.html?boardId=${post.boardId}`;
+                    });
+                    postList.appendChild(postDiv);
+                  });
+                })
+                .catch(error => console.error('Error fetching data:', error));
+      };
+
+      const sellButton = document.getElementById('sell-button');
+      const buyButton = document.getElementById('buy-button');
+
+      sellButton.addEventListener('click', () => {
+        sellButton.classList.add('selected');
+        buyButton.classList.remove('selected');
+        fetchData('/boards/sell');
+      });
+
+      buyButton.addEventListener('click', () => {
+        buyButton.classList.add('selected');
+        sellButton.classList.remove('selected');
+        fetchData('/boards/buy');
+      });
+
+      document.querySelector('.register-button button').addEventListener('click', () => {
+        window.location.href = 'http://localhost:8080/createBoard.html';
+      });
+
+      // 초기 로딩 시 모든 게시글 가져오기
+      fetchData('/boards');
     });
   </script>
 </head>
