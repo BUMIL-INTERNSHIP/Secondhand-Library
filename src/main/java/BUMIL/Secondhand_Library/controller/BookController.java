@@ -22,8 +22,6 @@ public class BookController {
     public String bookInfo(@PathVariable("id") Long id, Model model){
         BookEntity bookEntity = recommendationService.getBook(id);
 
-
-
         model.addAttribute(bookEntity);
         return "Book/bookInfo";
     }

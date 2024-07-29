@@ -1,80 +1,82 @@
 package BUMIL.Secondhand_Library.domain.book.APIClient;
 
-import BUMIL.Secondhand_Library.domain.book.Repository.BookRepository;
+import lombok.extern.slf4j.Slf4j;
 import org.json.JSONArray;
 import org.json.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.web.reactive.function.client.WebClient;
 
-import java.io.IOException;
+import java.util.concurrent.CompletableFuture;
 
+@Slf4j
 @Service
 public class AladdinAPIClient {
 
-    @Autowired
-    private BookRepository bookRepository;
-
-    @Value("${aladdin.api.key}")
     private String apiKey;
+    private final WebClient AladdinAwebClient;
 
-    private String apiUri = "https://www.aladin.co.kr/ttb/api/ItemSearch.aspx"; //도서 조회 url
+    @Autowired
+    public AladdinAPIClient(@Qualifier("aladdinWebClient") WebClient webClient,
+                            @Value("${aladdin.api.key}") String apiKey) {
+        this.AladdinAwebClient = webClient;
+        this.apiKey = apiKey;
+    }
 
+    // Remove @Async if using CompletableFuture from WebClient
+    public CompletableFuture<String[]> initializeBookInfo(String bookName) {
+        String[] BookTitlePart = bookName.trim().split("[/:=]|장편소설");
 
+        log.info("요청쿼리 : " + BookTitlePart[0]);
 
-    public void searchBooks(String bookName) throws IOException {
-        WebClient webClient = WebClient.builder()
-                .baseUrl(apiUri)
-                .build();
+        return AladdinAwebClient.get()
+                .uri(uriBuilder -> uriBuilder
+                        .queryParam("ttbkey", apiKey)
+                        .queryParam("Query", BookTitlePart[0])
+                        .queryParam("MaxResults", 1)
+                        .queryParam("SearchTarget", "Book")
+                        .queryParam("output", "js")
+                        .queryParam("Version", "20131101")
+                        .build())
+                .retrieve()
+                .bodyToMono(String.class)
+                .toFuture()
+                .thenApply(responseBody -> {
+                    String[] part = new String[3];
+                    try {
+                        JSONObject jsonResponse = new JSONObject(responseBody);
+                        if (jsonResponse.has("errorMessage")) {
+                            log.info("Error: " + jsonResponse.getString("errorMessage"));
+                            return null;
+                        }
 
-        try{
-            String responseBody = webClient.get()
-                    .uri(uriBuilder -> uriBuilder
-                            .queryParam("ttbkey", apiKey)
-                            .queryParam("Query", bookName)
-                            .queryParam("MaxResults", 5)
-                            .queryParam("SearchTarget", "Book")
-                            .queryParam("output", "js")
-                            .queryParam("Version", "20131101")
-                            .build())
-                    .retrieve()
-                    .bodyToMono(String.class)
-                    .block();
+                        if (!jsonResponse.has("item")) {
+                            log.info("No items found.");
+                            return null;
+                        }
 
-            JSONObject jsonResponse = new JSONObject(responseBody); //json 파싱
+                        JSONArray items = jsonResponse.getJSONArray("item");
 
-            if (jsonResponse.has("errorMessage")) {
-                System.out.println("Error: " + jsonResponse.getString("errorMessage"));
-                return;
-            }
+                        if (items.length() == 1) {
+                            JSONObject book = items.getJSONObject(0);
+                            log.info(String.valueOf(items.getJSONObject(0)));
+                            part[0] = book.optString("description", "업데이트 중입니다.");
+                            int itemId = book.optInt("itemId", -1);
+                            int priceSales = book.optInt("priceSales", -1);
 
-            // Check if items are present
-            if (!jsonResponse.has("item")) {
-                System.out.println("No items found.");
-                return;
-            }
-
-            JSONArray items = jsonResponse.getJSONArray("item");
-
-            for (int i = 0; i < items.length(); i++) {
-                JSONObject book = items.getJSONObject(i);
-                System.out.println("Title: " + book.getString("title"));
-                System.out.println("Author: " + book.getString("author"));
-                System.out.println("Publication Date: " + book.getString("pubDate"));
-                System.out.println("Description: " + book.optString("description", "No description available"));
-                System.out.println("Item ID: " + book.getInt("itemId"));
-                System.out.println("ISBN: " + book.getString("isbn"));
-                System.out.println("Price (Sales): " + book.getInt("priceSales"));
-                System.out.println("Price (Standard): " + book.getInt("priceStandard"));
-                System.out.println("Link: " + book.getString("link"));
-                System.out.println("Cover: " + book.getString("cover"));
-                System.out.println("\n============================== 중고 서적 확인 =====================================");
-                System.out.println("https://www.aladin.co.kr/shop/UsedShop/wuseditemall.aspx?ItemId=" + book.getInt("itemId"));
-                System.out.println();
-            }
-        }catch (Exception e){
-            e.printStackTrace();
-        }
+                            part[1] = itemId != -1 ? String.valueOf(itemId) : "0";
+                            part[2] = priceSales != -1 ? String.valueOf(priceSales) : "0";
+                        } else {
+                            part[0] = "업데이트 중입니다.";
+                            part[1] = "0";
+                            part[2] = "0";
+                        }
+                    } catch (Exception e) {
+                        e.printStackTrace();
+                    }
+                    return part;
+                });
     }
 }

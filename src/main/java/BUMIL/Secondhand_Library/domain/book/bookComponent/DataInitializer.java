@@ -8,6 +8,7 @@ import org.springframework.boot.CommandLineRunner;
 import org.springframework.stereotype.Component;
 
 import java.util.List;
+import java.util.concurrent.CompletableFuture;
 
 @Component
 public class DataInitializer implements CommandLineRunner {
@@ -20,8 +21,10 @@ public class DataInitializer implements CommandLineRunner {
 
     @Override
     public void run(String... args) throws Exception {
-        List<BookEntity> bookEntityList = libraryAPIClient.initializePopularBooks();
-        if (bookEntityList != null){
+        CompletableFuture<List<BookEntity>> futureBookList = libraryAPIClient.initializePopularBooks();
+        List<BookEntity> bookEntityList = futureBookList.get(); // 비동기 작업 완료를 기다립니다.
+
+        if (bookEntityList != null) {
             bookRepository.saveAll(bookEntityList);
         }
 
