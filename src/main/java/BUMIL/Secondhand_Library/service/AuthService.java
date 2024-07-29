@@ -1,6 +1,5 @@
 package BUMIL.Secondhand_Library.service;
 
-
 import BUMIL.Secondhand_Library.domain.member.dto.AuthLoginRes;
 import BUMIL.Secondhand_Library.domain.member.entity.MemberEntity;
 import BUMIL.Secondhand_Library.domain.member.repository.MemberRepository;
@@ -32,17 +31,33 @@ public class AuthService {
     private String redirect_uri;
 
     private final MemberRepository memberRepository;
-
     private final JwtTokenProvider jwtTokenProvider;
 
-    public ResponseEntity<AuthLoginRes> login(String code) throws IOException {
-        return getKakaoUserIdByKakaoAccessToken(getKakaoAccessToken(code));
+    public AuthLoginRes login(String code) throws IOException {
+        String kakaoAccessToken = getKakaoAccessToken(code);
+        JsonElement element = getJsonElementByAccessToken(kakaoAccessToken);
+
+        Long outhId = element.getAsJsonObject().get("id").getAsLong();
+        JsonObject properties = element.getAsJsonObject().get("properties").getAsJsonObject();
+        JsonObject kakao_account = element.getAsJsonObject().get("kakao_account").getAsJsonObject();
+
+        String nickname = properties.getAsJsonObject().get("nickname").getAsString();
+
+        MemberEntity user = memberRepository.findByOuthId(outhId);
+        if(user == null)
+            return register(outhId, nickname);
+
+        String accessToken = jwtTokenProvider.createAccessToken(outhId);
+        String refreshToken = jwtTokenProvider.createRefreshToken(outhId);
+
+        user.setRefreshToken(refreshToken);
+        memberRepository.save(user);
+
+        return new AuthLoginRes(accessToken, refreshToken);
     }
 
-    public ResponseEntity<AuthLoginRes> login(Authentication authentication) {
-
+    public ResponseEntity<AuthLoginRes> refreshToken(Authentication authentication) {
         MemberEntity user = memberRepository.findByOuthId(Long.valueOf(authentication.getName()));
-
         if(user == null)
             return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
 
@@ -51,68 +66,39 @@ public class AuthService {
     }
 
     public ResponseEntity<HttpStatus> logout(Authentication authentication){
-
         MemberEntity member = memberRepository.findByOuthId(Long.valueOf(authentication.getName()));
-
         if(member == null)
             return new ResponseEntity<>(HttpStatus.FORBIDDEN);
 
         member.setRefreshToken(null);
-
         memberRepository.save(member);
 
         return new ResponseEntity<>(HttpStatus.OK);
     }
 
-    private ResponseEntity<AuthLoginRes> getKakaoUserIdByKakaoAccessToken(String kakaoAccessToken) throws IOException {
-        JsonElement element = getJsonElementByAccessToken(kakaoAccessToken);
-
-        Long outhId = element.getAsJsonObject().get("id").getAsLong();
-        JsonObject properties = element.getAsJsonObject().get("properties").getAsJsonObject();
-        JsonObject kakao_account = element.getAsJsonObject().get("kakao_account").getAsJsonObject();
-
-        String nickname = properties.getAsJsonObject().get("nickname").getAsString();
-//        String email = kakao_account.getAsJsonObject().get("email").getAsString();
-
-        MemberEntity user = memberRepository.findByOuthId(outhId);
-
-        if(user == null)
-            return register(outhId,nickname);
-
-        String accessToken = jwtTokenProvider.createAccessToken(outhId);
-        String refreshToken = jwtTokenProvider.createRefreshToken(outhId);
-
-        user.setRefreshToken(refreshToken);
-
-        memberRepository.save(user);
-
-        return new ResponseEntity<>(new AuthLoginRes(accessToken, refreshToken), HttpStatus.OK);
+    public MemberEntity getUserInfo(Authentication authentication) {
+        return memberRepository.findByOuthId(Long.valueOf(authentication.getName()));
     }
 
-    private ResponseEntity<AuthLoginRes> register(Long outhId, String nickname){
-
-
+    private AuthLoginRes register(Long outhId, String nickname){
         String accessToken = jwtTokenProvider.createAccessToken(outhId);
         String refreshToken = jwtTokenProvider.createRefreshToken(outhId);
 
         MemberEntity user = MemberEntity.builder()
                 .outhId(outhId)
                 .memberName(nickname)
-//                .email(email)
                 .refreshToken(refreshToken)
                 .build();
 
         memberRepository.save(user);
 
-        return new ResponseEntity<>(new AuthLoginRes(accessToken, refreshToken), HttpStatus.CREATED);
+        return new AuthLoginRes(accessToken, refreshToken);
     }
 
     private JsonElement getJsonElementByAccessToken(String token) throws IOException {
         String reqUrl = "https://kapi.kakao.com/v2/user/me";
-
         URL url = new URL(reqUrl);
         HttpURLConnection httpURLConnection = (HttpURLConnection) url.openConnection();
-
         httpURLConnection.setRequestMethod("GET");
         httpURLConnection.setDoOutput(true);
         httpURLConnection.setRequestProperty("Authorization", "Bearer " + token);
@@ -122,7 +108,6 @@ public class AuthService {
 
     public String getKakaoAccessToken (String authorize_code) throws UnsupportedEncodingException {
         String access_Token = "";
-        String refresh_Token = "";
         String reqURL = "https://kauth.kakao.com/oauth/token";
 
         try {
@@ -143,25 +128,20 @@ public class AuthService {
             log.info("responseCode : " + responseCode);
 
             BufferedReader br = new BufferedReader(new InputStreamReader(conn.getInputStream()));
-            String line = "";
-            String result = "";
+            String line;
+            StringBuilder result = new StringBuilder();
 
             while ((line = br.readLine()) != null) {
-                result += line;
+                result.append(line);
             }
             log.info("response body : " + result);
 
             JsonParser parser = new JsonParser();
-            JsonElement element = parser.parse(result);
+            JsonElement element = parser.parse(result.toString());
 
             access_Token = element.getAsJsonObject().get("access_token").getAsString();
-            refresh_Token = element.getAsJsonObject().get("refresh_token").getAsString();
-
-            log.info("access_token : " + access_Token);
-            log.info("refresh_token : " + refresh_Token);
 
             br.close();
-
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -179,7 +159,6 @@ public class AuthService {
         }
 
         bufferedReader.close();
-
         return JsonParser.parseString(result.toString());
     }
 }
