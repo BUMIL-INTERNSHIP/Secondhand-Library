@@ -72,12 +72,12 @@ public class AuthService {
         JsonObject kakao_account = element.getAsJsonObject().get("kakao_account").getAsJsonObject();
 
         String nickname = properties.getAsJsonObject().get("nickname").getAsString();
-        String email = kakao_account.getAsJsonObject().get("email").getAsString();
+//        String email = kakao_account.getAsJsonObject().get("email").getAsString();
 
         MemberEntity user = memberRepository.findByOuthId(outhId);
 
         if(user == null)
-            return register(outhId,nickname,email);
+            return register(outhId,nickname);
 
         String accessToken = jwtTokenProvider.createAccessToken(outhId);
         String refreshToken = jwtTokenProvider.createRefreshToken(outhId);
@@ -89,7 +89,7 @@ public class AuthService {
         return new ResponseEntity<>(new AuthLoginRes(accessToken, refreshToken), HttpStatus.OK);
     }
 
-    private ResponseEntity<AuthLoginRes> register(Long outhId, String nickname, String email){
+    private ResponseEntity<AuthLoginRes> register(Long outhId, String nickname){
 
 
         String accessToken = jwtTokenProvider.createAccessToken(outhId);
@@ -98,7 +98,7 @@ public class AuthService {
         MemberEntity user = MemberEntity.builder()
                 .outhId(outhId)
                 .memberName(nickname)
-                .email(email)
+//                .email(email)
                 .refreshToken(refreshToken)
                 .build();
 

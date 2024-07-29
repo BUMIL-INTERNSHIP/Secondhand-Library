@@ -1,0 +1,25 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <title>카카오 로그인</title>
+    <script src="https://developers.kakao.com/sdk/js/kakao.min.js"></script>
+</head>
+<body>
+<h2>카카오 로그인</h2>
+<button id="kakao-login-btn">카카오 로그인</button>
+<script type="text/javascript">
+    // 카카오 SDK 초기화
+    Kakao.init('bc9537699d03799a297967214e3bbd2e');
+
+    // 초기화 확인
+    console.log('Kakao is initialized: ' + Kakao.isInitialized());
+
+    document.getElementById('kakao-login-btn').addEventListener('click', function() {
+        Kakao.Auth.authorize({
+            redirectUri: 'http://localhost:8080/login/auth'
+        });
+    });
+</script>
+</body>
+</html>

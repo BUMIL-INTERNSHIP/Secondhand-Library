@@ -16,8 +16,8 @@ public class MemberController {
 
     private final AuthService authService;
 
-    @GetMapping("/login")
-    public ResponseEntity<AuthLoginRes> login(String code) throws IOException {
+    @GetMapping("/login/auth")
+    public ResponseEntity<AuthLoginRes> login(@RequestParam String code) throws IOException {
         return authService.login(code);
     }
 
@@ -32,6 +32,4 @@ public class MemberController {
     public ResponseEntity<HttpStatus> logout(Authentication authentication){
         return authService.logout(authentication);
     }
-
-
 }
