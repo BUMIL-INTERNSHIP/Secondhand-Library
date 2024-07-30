@@ -4,19 +4,20 @@ import BUMIL.Secondhand_Library.domain.book.Repository.BookRepository;
 import BUMIL.Secondhand_Library.domain.book.entity.BookEntity;
 import lombok.extern.slf4j.Slf4j;
 import org.json.JSONArray;
+import org.json.JSONException;
 import org.json.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor;
+import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 import org.springframework.web.reactive.function.client.WebClient;
 
-import java.io.IOException;
 import java.time.LocalDate;
 import java.util.*;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutionException;
+import java.util.concurrent.Executor;
 
 
 @Slf4j
@@ -25,7 +26,7 @@ public class LibraryAPIClient {
 
     private final BookRepository bookRepository;
     private final AladdinAPIClient aladdinAPIClient;
-    private final ThreadPoolTaskExecutor bookApiTaskExecutor;
+    private final Executor bookApiTaskExecutor;
     private final String apiKey;
     private final WebClient libraryWebClient;
 
@@ -33,7 +34,7 @@ public class LibraryAPIClient {
     public LibraryAPIClient(
             @Qualifier("libraryWebClient") WebClient webClient,
             @Value("${library.api.key}") String apiKey,
-            @Qualifier("bookApiTaskExecutor") ThreadPoolTaskExecutor bookApiTaskExecutor,
+            @Qualifier("bookApiTaskExecutor") Executor  bookApiTaskExecutor,
             BookRepository bookRepository,
             AladdinAPIClient aladdinAPIClient) {
         this.libraryWebClient = webClient;
@@ -43,9 +44,11 @@ public class LibraryAPIClient {
         this.aladdinAPIClient = aladdinAPIClient;
     }
 
+
+    @Async("bookApiTaskExecutor")
     public CompletableFuture<List<BookEntity>> initializePopularBooks() {
         if (bookRepository.count() != 0) {
-            return CompletableFuture.completedFuture(null);
+            return CompletableFuture.completedFuture(Collections.emptyList());
         }
 
         List<BookEntity> bookEntities = new ArrayList<>();
@@ -87,13 +90,10 @@ public class LibraryAPIClient {
                     titles.add(bookName);
                     futures.add(CompletableFuture.supplyAsync(() -> {
                         try {
-
                             return processBook(bookName, docObj).get();
                         } catch (InterruptedException | ExecutionException e) {
                             log.error("Error processing book {}", bookName, e);
                             return null;
-                        } catch (IOException e) {
-                            throw new RuntimeException(e);
                         }
                     }, bookApiTaskExecutor));
                 }
@@ -121,25 +121,30 @@ public class LibraryAPIClient {
         }
     }
 
-    private CompletableFuture<BookEntity> processBook(String bookName, JSONObject docObj) throws IOException {
-
+    private CompletableFuture<BookEntity> processBook(String bookName, JSONObject docObj) {
         return aladdinAPIClient.initializeBookInfo(bookName)
                 .thenApply(part -> {
-                    if (part == null) {
-                        log.error("Failed to fetch book details for {}", bookName);
+                    if (part == null || part.length != 3) {
+                        log.error("Failed to fetch complete book details for {}", bookName);
                         return null;
                     }
-                    return BookEntity.builder()
-                            .bookName(docObj.getString("bookname"))
-                            .author(docObj.getString("authors"))
-                            .pubDate(docObj.getString("publication_year"))
-                            .description(part[0])
-                            .coverImg(docObj.getString("bookImageURL"))
-                            .kdc(docObj.getString("class_no"))
-                            .item_ID(Integer.parseInt(part[1]))
-                            .price(Integer.parseInt(part[2]))
-                            .build();
-                }).exceptionally(e -> {
+                    try {
+                        return BookEntity.builder()
+                                .bookName(docObj.getString("bookname"))
+                                .author(docObj.getString("authors"))
+                                .pubDate(docObj.getString("publication_year"))
+                                .description(part[0])
+                                .coverImg(docObj.getString("bookImageURL"))
+                                .kdc(docObj.getString("class_no"))
+                                .item_ID(Integer.parseInt(part[1]))
+                                .price(Integer.parseInt(part[2]))
+                                .build();
+                    } catch (NumberFormatException | JSONException e) {
+                        log.error("Error parsing book details for {}", bookName, e);
+                        return null;
+                    }
+                })
+                .exceptionally(e -> {
                     log.error("Error processing book {}", bookName, e);
                     return null;
                 });
@@ -187,7 +192,7 @@ public class LibraryAPIClient {
 
             for (int i = 0; i < items.length(); i++) {
                 if (finalBookList.size() == 10) break; //10개의 도서만 추출
-                
+
                 JSONObject docObj = items.getJSONObject(i).getJSONObject("doc");
                 String bookName = docObj.getString("bookname");
                 // 중복된 도서가 나올 수 있기 때문에 set으로 중복되지 않은 도서만 추가한다.
