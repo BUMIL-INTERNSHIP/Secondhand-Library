@@ -69,6 +69,14 @@ public class LibraryAPIClient {
                     .bodyToMono(String.class)
                     .block();
 
+            System.out.println(responseBody);
+
+
+            if (responseBody == null || responseBody.isEmpty()) {
+                log.error("Received null or empty response body.");
+                return CompletableFuture.completedFuture(bookEntities);
+            }
+
             JSONObject jsonResponse = new JSONObject(responseBody);
             JSONObject responseObj = jsonResponse.getJSONObject("response");
 
@@ -85,7 +93,7 @@ public class LibraryAPIClient {
             for (int i = 0; i < items.length(); i++) {
                 JSONObject docObj = items.getJSONObject(i).getJSONObject("doc");
                 String bookName = docObj.getString("bookname");
-
+                System.out.println("원본 이름 : " + bookName);
                 if (!titles.contains(bookName)) {
                     titles.add(bookName);
                     futures.add(CompletableFuture.supplyAsync(() -> {
@@ -124,20 +132,23 @@ public class LibraryAPIClient {
     private CompletableFuture<BookEntity> processBook(String bookName, JSONObject docObj) {
         return aladdinAPIClient.initializeBookInfo(bookName)
                 .thenApply(part -> {
-                    if (part == null || part.length != 3) {
+                    if (part == null || part.length != 4) {
                         log.error("Failed to fetch complete book details for {}", bookName);
                         return null;
                     }
                     try {
+                        String authors = docObj.getString("authors").replaceAll("[;,]", " ").trim();
+
                         return BookEntity.builder()
                                 .bookName(docObj.getString("bookname"))
-                                .author(docObj.getString("authors"))
+                                .author(authors)
                                 .pubDate(docObj.getString("publication_year"))
                                 .description(part[0])
                                 .coverImg(docObj.getString("bookImageURL"))
                                 .kdc(docObj.getString("class_no"))
                                 .item_ID(Integer.parseInt(part[1]))
                                 .price(Integer.parseInt(part[2]))
+                                .isbn(part[3])
                                 .build();
                     } catch (NumberFormatException | JSONException e) {
                         log.error("Error parsing book details for {}", bookName, e);

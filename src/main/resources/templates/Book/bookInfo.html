@@ -82,21 +82,21 @@
             </div>
             <div class="book-info">
                 <h2 class="book-title" th:text="${bookEntity.bookName}"></h2>
-                <p class="book-price">₩5,000</p>
+                <p class="book-price" th:text="'₩' + ${bookEntity.price}"></p>
                 <p class="book-author" th:text="${bookEntity.author}"></p>
                 <div class="bookmark-section">
-                    <label for="preference" class="bookmark-label">즐겨찾기</label>
-                    <textarea
+                    <label for="preference" class="bookmark-label">줄거리</label>
+                    <div
                             id="preference"
                             class="bookmark-text"
-                            placeholder="즐겨찾기입니다."
-                    ></textarea>
+                            th:utext="${bookEntity.description}"
+                    ></div>
                 </div>
-                <button class="stock-button">재고 확인</button>
+                <a class="stock-button" th:href="@{/book/used-inventory-check/{isbn}(isbn=${bookEntity.isbn})}">재고 확인</a>
             </div>
         </div>
         <div class="book-list">
-            <div class="book-item">
+        <div class="book-item">
                 <img
                         src="/placeholder.svg"
                         alt="Book cover"

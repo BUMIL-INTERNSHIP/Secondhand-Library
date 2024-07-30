@@ -26,7 +26,6 @@ public class BookController {
         return "Book/bookInfo";
     }
 
-
     //사용자 맞춤 도서 추천 서비스 이동
     @GetMapping("/recommendations")
     public String recommendations(){
@@ -43,12 +42,17 @@ public class BookController {
                 memberSelectionDto.getInterest()
         );
 
-        for (BookEntity b : recommendedBooks){
-            System.out.println("이름 : " + b.getBookName() + " id : "+b.getBookId());
-        }
-
-
         model.addAttribute("recommendedBooks", recommendedBooks);
+        return "Book/recommendationsList";
+    }
+
+    //알라딘 중고 재고 위치 확인
+    @GetMapping("/used-inventory-check/{isbn}")
+    public String usedInventoryCheck(@PathVariable("isbn") String isbn){
+        //재고가있는 지점 반환 재고가 없으면 빈 배열
+        //유효성 검사 필수
+        recommendationService.checkUsedStockInBranch(isbn);
+
         return "Book/recommendationsList";
     }
 }
