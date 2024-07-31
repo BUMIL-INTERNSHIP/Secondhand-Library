@@ -13,4 +13,6 @@ public interface BookRepository extends JpaRepository<BookEntity,Long> {
 
     @Query("SELECT b.bookName FROM BookEntity b")
     List<String> findAllBookNames();
+
+    BookEntity findByBookName(String bookName);
 }

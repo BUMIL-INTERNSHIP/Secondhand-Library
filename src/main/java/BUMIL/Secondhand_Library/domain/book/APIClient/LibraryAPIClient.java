@@ -205,9 +205,10 @@ public class LibraryAPIClient {
                 // 중복된 도서가 나올 수 있기 때문에 set으로 중복되지 않은 도서만 추가한다.
                 if (!titles.contains(bookName)){
                     titles.add(bookName);
+                    String authors = docObj.getString("authors").replaceAll("[;,]", " ").trim();
                     BookEntity bookEntity = BookEntity.builder()
                             .bookName(docObj.getString("bookname"))
-                            .author(docObj.getString("authors"))
+                            .author(authors)
                             .pubDate(docObj.getString("publication_year"))
                             .coverImg( docObj.getString("bookImageURL"))
                             .kdc(docObj.getString("class_no")) // Convert to Long if necessary
