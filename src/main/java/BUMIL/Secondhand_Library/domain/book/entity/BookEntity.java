@@ -5,14 +5,12 @@ import BUMIL.Secondhand_Library.domain.bookMark.entity.BookMarkEntity;
 import BUMIL.Secondhand_Library.domain.chatRoom.entity.ChatRoomEntity;
 import BUMIL.Secondhand_Library.domain.library.entity.LibraryEntity;
 import jakarta.persistence.*;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
+import lombok.*;
 
 import java.time.LocalDate;
 import java.util.List;
 
+@Setter
 @Getter
 @NoArgsConstructor
 @AllArgsConstructor

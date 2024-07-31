@@ -105,6 +105,65 @@ public class AladdinAPIClient {
                 });
     }
 
+    public String[] retrieveBookInfo(String bookName) {
+        String[] bookTitlePart = bookName.trim().split("[/:=]|장편소설");
+
+        log.info("Request query: {}", bookTitlePart[0]);
+
+        // 동기 API 호출
+        String responseBody = aladdinProductSearchWebClient.get()
+                .uri(uriBuilder -> uriBuilder
+                        .queryParam("ttbkey", apiKey)
+                        .queryParam("Query", bookTitlePart[0])
+                        .queryParam("MaxResults", 1)
+                        .queryParam("SearchTarget", "Book")
+                        .queryParam("output", "js")
+                        .queryParam("Version", "20131101")
+                        .build())
+                .retrieve() // .exchangeToMono() 대신 .retrieve() 사용
+                .bodyToMono(String.class)
+                .doOnSuccess(body -> log.debug("Response body: {}", body))
+                .doOnError(error -> log.error("Error reading response body", error))
+                .block(); // 비동기 호출을 동기적으로 처리
+
+        String[] part = new String[4];
+        try {
+            JSONObject jsonResponse = new JSONObject(responseBody);
+
+            if (jsonResponse.has("errorMessage")) {
+                log.error("Error: {}", jsonResponse.getString("errorMessage"));
+                return new String[]{"Error fetching details", "0", "0", "0"};
+            }
+
+            if (!jsonResponse.has("item")) {
+                log.info("No items found.");
+                return new String[]{"알라딘에 존재하지않는 재고입니다.", "0", "0", "0"};
+            }
+
+            JSONArray items = jsonResponse.getJSONArray("item");
+
+            if (items.length() == 1) {
+                JSONObject book = items.getJSONObject(0);
+                log.info("Book details: {}", book.toString());
+
+                part[0] = book.optString("description", "업데이트 중입니다.");
+                part[1] = String.valueOf(book.optInt("itemId", 0));
+                part[2] = String.valueOf(book.optInt("priceSales", 0));
+                part[3] = book.optString("isbn", "0");
+            } else {
+                part[0] = "업데이트 중입니다.";
+                part[1] = "0";
+                part[2] = "0";
+                part[3] = "0";
+            }
+        } catch (Exception e) {
+            log.error("Exception occurred while processing book info", e);
+            return new String[]{"Error", "0", "0", "0"};
+        }
+        return part;
+    }
+
+
     public List<String> findStore(String isbn) {
         List<String> storeDetails = new ArrayList<>();
 

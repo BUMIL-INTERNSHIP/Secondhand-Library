@@ -63,19 +63,6 @@ document.addEventListener("DOMContentLoaded", () => {
         });
     };
 
-    // Function to handle form submission
-    const handleSubmit = () => {
-        const inputs = document.querySelectorAll('input[type="hidden"]');
-        const values = Array.from(inputs).reduce((acc, input) => {
-            acc[input.name] = input.value;
-            return acc;
-        }, {});
-
-        console.log("Form Data:", values);
-        // 실제 폼 제출
-        document.querySelector("form").submit();
-    };
-
     // Add event listeners to navigation buttons
     document
         .querySelector(".form-outer")
@@ -91,22 +78,5 @@ document.addEventListener("DOMContentLoaded", () => {
                 .forEach((i) => i.classList.remove("selected"));
             item.classList.add("selected");
         });
-    });
-
-    // Add event listener to submit button
-    document.querySelector(".submit").addEventListener("click", (event) => {
-        event.preventDefault(); // Prevent actual form submission
-        // Update the hidden input on the last page before submitting
-        const finalPage = document.querySelector(".page:last-child");
-        const selectedItem = finalPage.querySelector(".grid-item.selected");
-        if (selectedItem) {
-            const hiddenInput = finalPage.querySelector('input[type="hidden"]');
-            if (hiddenInput) {
-                const currentValue = hiddenInput.value;
-                const newValue = selectedItem.getAttribute("data-value");
-                hiddenInput.value = currentValue ? `${currentValue},${newValue}` : newValue;
-            }
-        }
-        handleSubmit();
     });
 });

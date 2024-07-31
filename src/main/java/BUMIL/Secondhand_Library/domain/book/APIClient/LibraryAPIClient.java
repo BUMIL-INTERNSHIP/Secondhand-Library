@@ -1,6 +1,6 @@
 package BUMIL.Secondhand_Library.domain.book.APIClient;
 
-import BUMIL.Secondhand_Library.domain.book.Repository.BookRepository;
+import BUMIL.Secondhand_Library.domain.book.Service.BookRepositoryService;
 import BUMIL.Secondhand_Library.domain.book.entity.BookEntity;
 import lombok.extern.slf4j.Slf4j;
 import org.json.JSONArray;
@@ -24,32 +24,29 @@ import java.util.concurrent.Executor;
 @Service
 public class LibraryAPIClient {
 
-    private final BookRepository bookRepository;
     private final AladdinAPIClient aladdinAPIClient;
+
     private final Executor bookApiTaskExecutor;
+
     private final String apiKey;
+
     private final WebClient libraryWebClient;
+
 
     @Autowired
     public LibraryAPIClient(
             @Qualifier("libraryWebClient") WebClient webClient,
             @Value("${library.api.key}") String apiKey,
             @Qualifier("bookApiTaskExecutor") Executor  bookApiTaskExecutor,
-            BookRepository bookRepository,
             AladdinAPIClient aladdinAPIClient) {
         this.libraryWebClient = webClient;
         this.apiKey = apiKey;
         this.bookApiTaskExecutor = bookApiTaskExecutor;
-        this.bookRepository = bookRepository;
         this.aladdinAPIClient = aladdinAPIClient;
     }
 
-
     @Async("bookApiTaskExecutor")
     public CompletableFuture<List<BookEntity>> initializePopularBooks() {
-        if (bookRepository.count() != 0) {
-            return CompletableFuture.completedFuture(Collections.emptyList());
-        }
 
         List<BookEntity> bookEntities = new ArrayList<>();
         LocalDate today = LocalDate.now();
@@ -163,7 +160,6 @@ public class LibraryAPIClient {
 
     public List<BookEntity> searchPopularBooks(String sex, String age, String location, String interest){
         List<BookEntity> newlyRecommendedBooks = new ArrayList<>(); //추천되었지만 디비에 존재하지않는 도서들
-        List<BookEntity> finalBookList = new ArrayList<>();//반환될 도서들
 
         LocalDate today = LocalDate.now(); //서버 시작일 기준 날짜
         int currentYear = today.getYear(); //서비 시작일 기준 년도
@@ -202,7 +198,7 @@ public class LibraryAPIClient {
             Set<String> titles = new HashSet<>(); // Set to keep track of unique titles
 
             for (int i = 0; i < items.length(); i++) {
-                if (finalBookList.size() == 10) break; //10개의 도서만 추출
+                if (newlyRecommendedBooks.size() == 10) break; //10개의 도서만 추출
 
                 JSONObject docObj = items.getJSONObject(i).getJSONObject("doc");
                 String bookName = docObj.getString("bookname");
@@ -216,18 +212,11 @@ public class LibraryAPIClient {
                             .coverImg( docObj.getString("bookImageURL"))
                             .kdc(docObj.getString("class_no")) // Convert to Long if necessary
                             .build();
-
-                    //이미 DB에 존재하는인지 확인하고 중복된 데이터 방지
-                    if (bookRepository.existsByBookName(bookName)){
-                        finalBookList.add(bookEntity);
-                    }else{
-                        newlyRecommendedBooks.add(bookEntity);
-                        finalBookList.add(bookEntity);
-                    }
+                    newlyRecommendedBooks.add(bookEntity);
                 }
             }
-            List<BookEntity> savedBooks =   bookRepository.saveAll(newlyRecommendedBooks);
-            return savedBooks;
+            return  newlyRecommendedBooks;
+
         } catch (Exception e) {
             e.printStackTrace();
         }
