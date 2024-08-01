@@ -66,12 +66,11 @@
             color: #333;
         }
         .bookshelf {
-            display: flex;
-            flex-wrap: wrap;
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
             gap: 20px;
         }
         .book {
-            width: calc(33.333% - 20px);
             background-color: white;
             padding: 10px;
             border-radius: 10px;
@@ -97,16 +96,35 @@
             font-size: 1.2em;
             cursor: pointer;
         }
+        .pagination {
+            display: flex;
+            justify-content: center;
+            margin-top: 20px;
+        }
+        .pagination button {
+            background-color: #e6f7ff;
+            border: 1px solid #b3daff;
+            padding: 5px 10px;
+            margin: 0 5px;
+            cursor: pointer;
+        }
+        .pagination button.disabled {
+            background-color: #ccc;
+            cursor: not-allowed;
+        }
     </style>
     <script>
+        let currentPage = 1; // 전역 변수로 currentPage를 정의합니다.
+        const booksPerPage = 6;
+
         window.onload = function() {
             const accessToken = localStorage.getItem('accessToken');
-
             if (accessToken) {
                 fetch('/api/userinfo', {
                     method: 'GET',
                     headers: {
-                        'Authorization': 'Bearer ' + accessToken
+                        'Authorization': 'Bearer ' + accessToken,
+                        'Accept': 'application/json'
                     }
                 })
                 .then(response => response.json())
@@ -118,32 +136,90 @@
                         <div>전화번호: ${user.phoneNumber}</div>
                         <div>성별: ${user.gender}</div>
                     `;
-                    return fetch('/mypage/bookshelf', {
-                        method: 'GET',
-                        headers: {
-                            'Authorization': 'Bearer ' + accessToken
-                        }
-                    });
-                })
-                .then(response => response.json())
-                .then(books => {
-                    const bookshelf = document.querySelector('.bookshelf');
-                    books.forEach(book => {
-                        const bookItem = document.createElement('div');
-                        bookItem.classList.add('book');
-                        bookItem.innerHTML = `
-                            <img src="${book.coverImg}" alt="Book cover">
-                            <h3>${book.bookName}</h3>
-                            <p>${book.author}</p>
-                        `;
-                        bookshelf.appendChild(bookItem);
-                    });
+                    loadBooks(currentPage);
                 })
                 .catch(error => console.error('Error:', error));
             } else {
                 console.error('액세스 토큰이 없습니다.');
             }
         };
+
+        function loadBooks(page) {
+            const accessToken = localStorage.getItem('accessToken');
+            if (accessToken) {
+                fetch(`/mypage/bookshelf?page=${page}&size=${booksPerPage}`, {
+                    method: 'GET',
+                    headers: {
+                        'Authorization': 'Bearer ' + accessToken,
+                        'Accept': 'application/json'
+                    }
+                })
+                .then(response => response.json())
+                .then(data => {
+                    console.log("Bookshelf data received: ", data);
+                    const bookshelf = document.querySelector('.bookshelf');
+                    bookshelf.innerHTML = '';
+                    if (data.bookDtoList && data.bookDtoList.length > 0) {
+                        data.bookDtoList.forEach(book => {
+                            const bookItem = document.createElement('div');
+                            bookItem.classList.add('book');
+                            bookItem.innerHTML = `
+                                <img src="${book.coverImg}" alt="Book cover">
+                                <h3>${book.bookName}</h3>
+                                <p>${book.author}</p>
+                                <button class="favorite" onclick="deleteBook(${book.bookId})">삭제</button>
+                            `;
+                            bookshelf.appendChild(bookItem);
+                        });
+                        updatePagination(data.totalPages, page);
+                    } else {
+                        bookshelf.innerHTML = '<p>서재에 책이 없습니다.</p>';
+                    }
+                })
+                .catch(error => console.error('Error:', error));
+            } else {
+                console.error('액세스 토큰이 없습니다.');
+            }
+        }
+
+        function deleteBook(bookId) {
+            const accessToken = localStorage.getItem('accessToken');
+            fetch(`/mypage/bookshelf/${bookId}`, {
+                method: 'DELETE',
+                headers: {
+                    'Authorization': 'Bearer ' + accessToken,
+                    'Accept': 'application/json'
+                }
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    loadBooks(currentPage); // 책 삭제 후 현재 페이지의 책 목록을 다시 로드합니다.
+                } else {
+                    console.error('Failed to delete book');
+                }
+            })
+            .catch(error => console.error('Error:', error));
+        }
+
+        function updatePagination(totalPages, currentPage) {
+            const pagination = document.querySelector('.pagination');
+            pagination.innerHTML = '';
+            for (let i = 1; i <= totalPages; i++) {
+                const button = document.createElement('button');
+                button.innerText = i;
+                if (i === currentPage) {
+                    button.classList.add('disabled');
+                } else {
+                    button.onclick = () => {
+                        currentPage = i;
+                        loadBooks(i);
+                    };
+                }
+                pagination.appendChild(button);
+            }
+        }
+
     </script>
 </head>
 <body>
@@ -160,7 +236,10 @@
     <div class="content">
         <h2>나의 서재</h2>
         <div class="bookshelf">
-
+            <!-- 책이 여기에 표시됩니다 -->
+        </div>
+        <div class="pagination">
+            <!-- 페이지 네비게이션 버튼이 여기에 표시됩니다 -->
         </div>
     </div>
 </div>
