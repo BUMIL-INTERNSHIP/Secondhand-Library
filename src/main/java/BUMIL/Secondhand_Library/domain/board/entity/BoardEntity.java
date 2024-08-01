@@ -3,6 +3,7 @@ package BUMIL.Secondhand_Library.domain.board.entity;
 import BUMIL.Secondhand_Library.domain.book.entity.BookEntity;
 import BUMIL.Secondhand_Library.domain.member.entity.MemberEntity;
 import BUMIL.Secondhand_Library.global.basic.BasicEntity;
+import com.fasterxml.jackson.annotation.JsonBackReference;
 import jakarta.persistence.*;
 import lombok.AccessLevel;
 import lombok.Getter;
@@ -20,20 +21,22 @@ public class BoardEntity extends BasicEntity {
     private Long boardId;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "book_id",nullable = false)
+    @JoinColumn(name = "book_id", nullable = false)
+    @JsonBackReference
     private BookEntity book;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "member_id",nullable = false)
+    @JoinColumn(name = "member_id", nullable = false)
+    @JsonBackReference
     private MemberEntity member;
 
-    @Column(name = "board_title",nullable = false)
+    @Column(name = "board_title", nullable = false)
     private String boardTitle;
 
-    @Column(name = "board_content",nullable = false)
+    @Column(name = "board_content", nullable = false)
     private String boardContent;
 
-    @Column(name = "board_img",nullable = false)
+    @Column(name = "board_img", nullable = false)
     private String boardImg;
 
     @Column
@@ -41,13 +44,4 @@ public class BoardEntity extends BasicEntity {
 
     @Column
     private Long price;
-
-
-
-
-
-
-
-
-
 }

@@ -109,13 +109,7 @@
                         'Authorization': 'Bearer ' + accessToken
                     }
                 })
-                .then(response => {
-                    if (response.ok) {
-                        return response.json();
-                    } else {
-                        throw new Error('네트워크 응답이 좋지 않습니다.');
-                    }
-                })
+                .then(response => response.json())
                 .then(user => {
                     document.querySelector('.profile-pic').innerText = '👤';
                     document.querySelector('.info').innerHTML = `
@@ -124,10 +118,28 @@
                         <div>전화번호: ${user.phoneNumber}</div>
                         <div>성별: ${user.gender}</div>
                     `;
+                    return fetch('/mypage/bookshelf', {
+                        method: 'GET',
+                        headers: {
+                            'Authorization': 'Bearer ' + accessToken
+                        }
+                    });
                 })
-                .catch(error => {
-                    console.error('로그인 정보를 가져오는 도중 오류가 발생했습니다:', error);
-                });
+                .then(response => response.json())
+                .then(books => {
+                    const bookshelf = document.querySelector('.bookshelf');
+                    books.forEach(book => {
+                        const bookItem = document.createElement('div');
+                        bookItem.classList.add('book');
+                        bookItem.innerHTML = `
+                            <img src="${book.coverImg}" alt="Book cover">
+                            <h3>${book.bookName}</h3>
+                            <p>${book.author}</p>
+                        `;
+                        bookshelf.appendChild(bookItem);
+                    });
+                })
+                .catch(error => console.error('Error:', error));
             } else {
                 console.error('액세스 토큰이 없습니다.');
             }
@@ -148,42 +160,7 @@
     <div class="content">
         <h2>나의 서재</h2>
         <div class="bookshelf">
-            <div class="book">
-                <img src="book1.jpg" alt="책 이미지">
-                <h3>혼갈의 시작</h3>
-                <p>천희재</p>
-                <div class="favorite">❤️</div>
-            </div>
-            <div class="book">
-                <img src="book2.jpg" alt="책 이미지">
-                <h3>꽃길이 따로 있나, 내 삶이 꽃길이지</h3>
-                <p>오행선</p>
-                <div class="favorite">❤️</div>
-            </div>
-            <div class="book">
-                <img src="book3.jpg" alt="책 이미지">
-                <h3>무작정의 삶</h3>
-                <p>강민희</p>
-                <div class="favorite">❤️</div>
-            </div>
-            <div class="book">
-                <img src="book4.jpg" alt="책 이미지">
-                <h3>마녀의 길</h3>
-                <p>이가나와 지오</p>
-                <div class="favorite">❤️</div>
-            </div>
-            <div class="book">
-                <img src="book5.jpg" alt="책 이미지">
-                <h3>아이가 없는 집</h3>
-                <p>밀러드 밀드</p>
-                <div class="favorite">❤️</div>
-            </div>
-            <div class="book">
-                <img src="book6.jpg" alt="책 이미지">
-                <h3>나의 돈키호테</h3>
-                <p>진호영</p>
-                <div class="favorite">❤️</div>
-            </div>
+
         </div>
     </div>
 </div>

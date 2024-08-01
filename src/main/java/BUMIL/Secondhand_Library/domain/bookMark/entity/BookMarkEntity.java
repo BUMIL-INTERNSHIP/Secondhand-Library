@@ -3,6 +3,7 @@ package BUMIL.Secondhand_Library.domain.bookMark.entity;
 import BUMIL.Secondhand_Library.domain.book.entity.BookEntity;
 import BUMIL.Secondhand_Library.domain.member.entity.MemberEntity;
 import BUMIL.Secondhand_Library.global.basic.BasicEntity;
+import com.fasterxml.jackson.annotation.JsonBackReference;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -10,7 +11,6 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 
 import java.time.LocalDate;
-
 
 @Getter
 @NoArgsConstructor
@@ -26,9 +26,11 @@ public class BookMarkEntity extends BasicEntity {
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "book_id")
+    @JsonBackReference
     private BookEntity book;
 
     @OneToOne
+    @JsonBackReference
     private MemberEntity member;
 
     private String content;
