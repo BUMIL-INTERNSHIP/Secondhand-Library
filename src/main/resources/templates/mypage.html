@@ -164,7 +164,9 @@
                             const bookItem = document.createElement('div');
                             bookItem.classList.add('book');
                             bookItem.innerHTML = `
-                                <img src="${book.coverImg}" alt="Book cover">
+                                <a href="/book/${book.bookId}">
+                                    <img src="${book.coverImg}" alt="Book cover">
+                                </a>
                                 <h3>${book.bookName}</h3>
                                 <p>${book.author}</p>
                                 <button class="favorite" onclick="deleteBook(${book.bookId})">삭제</button>
@@ -219,7 +221,6 @@
                 pagination.appendChild(button);
             }
         }
-
     </script>
 </head>
 <body>
