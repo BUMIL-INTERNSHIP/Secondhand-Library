@@ -5,7 +5,7 @@ import lombok.Data;
 
 @Data
 @AllArgsConstructor
-public class MemberSelectionDto {
+public class MemberSelectionDTO {
     private String sex;
     private String age;
     private String location;

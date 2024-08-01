@@ -47,7 +47,7 @@ public class BookRepositoryService {
 
         // 전체 도서 리스트에서 데이터베이스에 있는 도서만 반환
         return bookEntities.stream()
-                .map(book -> bookRepository.findByBookName(book.getBookName()))
+                .map(book -> bookRepository.findSingleByBookName(book.getBookName()))
                 .filter(Objects::nonNull)
                 .collect(Collectors.toList());
     }
@@ -65,4 +65,11 @@ public class BookRepositoryService {
         return bookRepository.findById(id).orElse(null);
     }
 
+    public List<BookEntity> bookFinder(String bookName) {
+        return bookRepository.findAllByBookNameContaining(bookName);
+    }
+
+    public List<BookEntity> getAllBooks() {
+        return bookRepository.findAll();
+    }
 }

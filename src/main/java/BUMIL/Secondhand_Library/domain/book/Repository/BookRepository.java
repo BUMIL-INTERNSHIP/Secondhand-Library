@@ -14,5 +14,9 @@ public interface BookRepository extends JpaRepository<BookEntity,Long> {
     @Query("SELECT b.bookName FROM BookEntity b")
     List<String> findAllBookNames();
 
-    BookEntity findByBookName(String bookName);
+    //이름으로 저장된 도서 객체를 찾아오는 메서드
+    BookEntity findSingleByBookName(String bookName);
+
+    //bookName 이 포함된 도서 조회
+    List<BookEntity> findAllByBookNameContaining(String bookName);
 }

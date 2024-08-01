@@ -31,7 +31,9 @@ public class BookMarkEntity extends BasicEntity {
     @OneToOne
     private MemberEntity member;
 
-    private String content;
+    private String author; //인물 혹 글쓴이
+
+    private String quote; //인용구
 
     private LocalDate bookMarkDate;
 }
