@@ -22,7 +22,6 @@
                     <p th:text="'지은이  : ' + ${book.author}"></p>
                     <p th:text="'출시년도 : ' + ${book.pubDate}"></p>
                     <div class="button-container">
-                        <button class="btn" th:onclick="'console.log(' + ${book.bookId} + ')'">상세보기</button>
                         <button class="btn" th:onclick="'location.href=\'/book/' + ${book.bookId} + '\''">상세보기</button>
                         <button class="btn">중고 재고확인</button>
                     </div>

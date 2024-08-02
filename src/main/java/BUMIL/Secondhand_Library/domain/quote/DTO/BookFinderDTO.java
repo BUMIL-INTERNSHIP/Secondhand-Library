@@ -1,4 +1,4 @@
-package BUMIL.Secondhand_Library.domain.book.DTO;
+package BUMIL.Secondhand_Library.domain.quote.DTO;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;

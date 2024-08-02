@@ -1,11 +1,12 @@
 package BUMIL.Secondhand_Library.controller;
 
-import BUMIL.Secondhand_Library.domain.book.DTO.BookFinderDTO;
+import BUMIL.Secondhand_Library.domain.quote.DTO.BookFinderDTO;
 import BUMIL.Secondhand_Library.domain.book.DTO.MemberSelectionDTO;
 
 import BUMIL.Secondhand_Library.domain.book.Service.APIService;
 import BUMIL.Secondhand_Library.domain.book.Service.BookRepositoryService;
 import BUMIL.Secondhand_Library.domain.book.entity.BookEntity;
+import BUMIL.Secondhand_Library.domain.quote.DTO.QuoteDTO;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -41,12 +42,7 @@ public class BookController {
     @PostMapping("/recommendations")
     public String recommendations(MemberSelectionDTO memberSelectionDto , Model model){
 
-        List<BookEntity> recommendedBooks = bookRepositoryService.searchPopularBooks(
-                memberSelectionDto.getSex(),
-                memberSelectionDto.getAge(),
-                memberSelectionDto.getLocation(),
-                memberSelectionDto.getInterest()
-        );
+        List<BookEntity> recommendedBooks = bookRepositoryService.searchPopularBooks(memberSelectionDto);
 
         model.addAttribute("recommendedBooks", recommendedBooks);
         return "Book/recommendationsList";
@@ -69,7 +65,7 @@ public class BookController {
     public String quoteBookFinder(Model model){
         List<BookEntity> bookEntities = bookRepositoryService.getAllBooks();
         model.addAttribute("bookEntities", bookEntities);
-        return  "BookMark/BookFinder";
+        return  "Quote/BookFinder";
     }
 
     @PostMapping("/BookFinder")
@@ -77,15 +73,26 @@ public class BookController {
         List<BookEntity> bookEntities =  bookRepositoryService.bookFinder(bookFinderDTO.getBookName());
         if (bookEntities != null){
             model.addAttribute("bookEntities", bookEntities);
-            return  "BookMark/BookFinder";
+            return  "Quote/BookFinder";
         }
-        return null;
+        return "Quote/BookFinder";
     }
 
     @GetMapping("/{bookId}/quoteForm")
     public String quoteForm(@PathVariable("bookId") Long id , Model model){
-        model.addAttribute("bookId",id);
-        return "";
+        BookEntity bookEntity = bookRepositoryService.getBook(id);
+        if (bookEntity != null){
+            model.addAttribute("book",bookEntity);
+            return "Quote/QuoteForm";
+        }
+        return  "Quote/BookFinder";
+    }
+    @PostMapping("/{bookId}/quoteForm")
+    public String createQuote(@PathVariable("bookId") Long id , QuoteDTO quoteDTO){
+        System.out.println(quoteDTO.getQuote());
+        System.out.println(quoteDTO.getAuthor());
+        bookRepositoryService.createQuote(id , quoteDTO.getAuthor(), quoteDTO.getQuote());
+        return  "Quote/BookFinder"; //나중에 마이페이지로 이동
     }
 
 }

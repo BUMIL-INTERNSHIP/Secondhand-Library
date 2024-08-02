@@ -1,12 +1,16 @@
 package BUMIL.Secondhand_Library.domain.book.Service;
 
 
+import BUMIL.Secondhand_Library.domain.book.DTO.MemberSelectionDTO;
 import BUMIL.Secondhand_Library.domain.book.Repository.BookRepository;
 import BUMIL.Secondhand_Library.domain.book.entity.BookEntity;
+import BUMIL.Secondhand_Library.domain.quote.Repository.QuoteRepository;
+import BUMIL.Secondhand_Library.domain.quote.entity.QuoteEntity;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.awt.print.Book;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -20,9 +24,17 @@ public class BookRepositoryService {
     @Autowired
     BookRepository bookRepository;
 
-    public List<BookEntity> searchPopularBooks(String sex, String age, String location, String interest) {
+    @Autowired
+    QuoteRepository quoteRepository;
+
+    public List<BookEntity> searchPopularBooks(MemberSelectionDTO memberSelectionDTO) {
         // DB에 들어있는 객체와는 다른 객체
-        List<BookEntity> bookEntities = apiService.searchPopularBooks(sex, age, location, interest);
+        List<BookEntity> bookEntities = apiService.searchPopularBooks(
+                memberSelectionDTO.getSex(),
+                memberSelectionDTO.getAge(),
+                memberSelectionDTO.getLocation(),
+                memberSelectionDTO.getInterest()
+        );
 
         Set<String> existingBookNames = new HashSet<>(bookRepository.findAllBookNames());
 
@@ -71,5 +83,19 @@ public class BookRepositoryService {
 
     public List<BookEntity> getAllBooks() {
         return bookRepository.findAll();
+    }
+
+    public void createQuote(Long id, String author, String quote) {
+        Optional<BookEntity> bookEntity = bookRepository.findById(id);
+        if (bookEntity.isPresent()){
+            BookEntity book = bookEntity.get();
+            QuoteEntity quoteEntity = QuoteEntity.builder()
+                    .book(book)
+                    .author(author)
+                    .quote(quote)
+                    .build();
+            quoteRepository.save(quoteEntity);
+        }
+
     }
 }
