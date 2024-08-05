@@ -17,7 +17,7 @@
             display: flex;
             justify-content: center;
             align-items: center;
-            height: 100vh;
+            height: 100%;
         }
         .container {
             display: flex;
@@ -133,8 +133,6 @@
                     document.querySelector('.info').innerHTML = `
                         <div>${user.memberName}</div>
                         <div>이메일: ${user.email}</div>
-                        <div>전화번호: ${user.phoneNumber}</div>
-                        <div>성별: ${user.gender}</div>
                     `;
                     loadBooks(currentPage);
                 })

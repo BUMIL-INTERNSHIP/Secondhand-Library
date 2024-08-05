@@ -42,10 +42,11 @@ public class AuthService {
         JsonObject kakao_account = element.getAsJsonObject().get("kakao_account").getAsJsonObject();
 
         String nickname = properties.getAsJsonObject().get("nickname").getAsString();
+        String email = kakao_account.getAsJsonObject().get("email").getAsString();
 
         MemberEntity user = memberRepository.findByOuthId(outhId);
         if(user == null)
-            return register(outhId, nickname);
+            return register(outhId, nickname, email);
 
         String accessToken = jwtTokenProvider.createAccessToken(outhId);
         String refreshToken = jwtTokenProvider.createRefreshToken(outhId);
@@ -80,13 +81,14 @@ public class AuthService {
         return memberRepository.findByOuthId(Long.valueOf(authentication.getName()));
     }
 
-    private AuthLoginRes register(Long outhId, String nickname){
+    private AuthLoginRes register(Long outhId, String nickname, String email){
         String accessToken = jwtTokenProvider.createAccessToken(outhId);
         String refreshToken = jwtTokenProvider.createRefreshToken(outhId);
 
         MemberEntity user = MemberEntity.builder()
                 .outhId(outhId)
                 .memberName(nickname)
+                .email(email)
                 .refreshToken(refreshToken)
                 .build();
 
@@ -124,7 +126,7 @@ public class AuthService {
             sb.append("&code=" + authorize_code);
             bw.write(sb.toString());
             bw.flush();
-            int responseCode = conn.getResponseCode();
+            int responseCode = conn.getResponseCode();  
             log.info("responseCode : " + responseCode);
 
             BufferedReader br = new BufferedReader(new InputStreamReader(conn.getInputStream()));

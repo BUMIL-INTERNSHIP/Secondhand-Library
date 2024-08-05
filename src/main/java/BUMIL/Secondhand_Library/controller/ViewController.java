@@ -29,4 +29,7 @@ public class ViewController {
     public String mypage() {
         return "mypage";
     }
+
+    @GetMapping("/map")
+    public String map() { return "map"; }
 }
