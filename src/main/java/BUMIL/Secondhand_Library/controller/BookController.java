@@ -69,13 +69,13 @@ public class BookController {
 
     //알라딘 중고 재고 위치 확인
     @GetMapping("/used-inventory-check/{isbn}")
-    public String usedInventoryCheck(@PathVariable("isbn") String isbn){
-        //재고가있는 지점 반환 재고가 없으면 빈 배열
-        //유효성 검사 필수
-        apiService.checkUsedStockInBranch(isbn);
-
-        return "Book/recommendationsList";
+    public String usedInventoryCheck(@PathVariable("isbn") String isbn, Model model) {
+        List<String> stores = apiService.checkUsedStockInBranch(isbn);
+        model.addAttribute("stores", stores);
+        model.addAttribute("isbn", isbn);
+        return "map"; // map.html을 가리키도록 함
     }
+
 
     @PostMapping("/add-to-wishlist/{id}")
     public ResponseEntity<String> addToWishlist(@PathVariable("id") Long bookId) {
