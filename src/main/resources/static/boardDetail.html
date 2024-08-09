@@ -163,21 +163,19 @@
     <p class="price" id="price">가격: 0원</p>
     <p class="address" id="address">주소: 주소 정보</p>
     <div class="buttons-container">
-      <button class="chat-button">채팅 하기</button>
+      <button class="chat-button" id="connect">채팅 하기</button>
       <button class="edit-button" id="editButton" style="display:none;">수정</button>
       <button class="delete-button" id="deleteButton" style="display:none;">삭제</button>
     </div>
   </div>
 </div>
 
-<div class="popup-background" id="popupBackground">
-  <div class="popup">
-    <p>로그인을 해주세요</p>
-    <button id="popupConfirmButton">확인</button>
-  </div>
+
 </div>
 
 <script>
+  let websocket;
+
   document.addEventListener('DOMContentLoaded', function() {
     const urlParams = new URLSearchParams(window.location.search);
     const boardId = urlParams.get('boardId');
@@ -202,6 +200,12 @@
               document.getElementById('boardContent').textContent = data.boardContent || '내용 정보 없음';
               document.getElementById('price').textContent = `가격: ${data.price ? data.price + '원' : '가격 정보 없음'}`;
               document.getElementById('address').textContent = `주소: ${data.address || '주소 정보 없음'}`;
+              document.getElementById('connect').addEventListener('click', () => connect());
+
+              // 채팅하기 버튼에 이벤트 리스너 추가
+              document.getElementById('connect').addEventListener('click', function() {
+                window.location.href = 'http://localhost:8080/chat.html';
+              });
 
               const currentUserOuthId = data.currentUserOuthId;
               if (!currentUserOuthId) {
@@ -210,16 +214,77 @@
                 document.getElementById('editButton').style.display = 'inline-block';
                 document.getElementById('deleteButton').style.display = 'inline-block';
               }
+
             })
             .catch(error => {
               console.error('데이터를 가져오는 중 오류가 발생했습니다:', error);
-              document.getElementById('boardContent').textContent = '데이터를 가져오는 중 오류가 발생했습니다.';
             });
 
     document.getElementById('popupConfirmButton').addEventListener('click', function() {
       window.location.href = 'http://localhost:8080/board.html'; // 글 목록 리스트 페이지 URL로 이동
     });
+
   });
+
+  function onOpen() {
+    websocket.send("연결됏슴");
+    console.log("connected: onOpen()");
+
+    window.location.href = 'chat.html';
+  }
+
+  function onMessage(receivedMessage) {
+    showMessage(receivedMessage.data);
+    console.log("received: onMessage()");
+  }
+
+  function onClose() {
+    console.log("disconnected: onClose()");
+  }
+
+  function connect() {
+    websocket = new WebSocket("ws://localhost:8080/ws/chats");
+    websocket.onmessage = onMessage;
+    websocket.onopen = onOpen;
+    websocket.onclose = onClose;
+
+    setConnected(true);
+    console.log("연결됨요");
+  }
+
+  function disconnect() {
+    if (websocket) {
+      websocket.close();
+    }
+
+    setConnected(false);
+    console.log("disconnected: disconnect()");
+  }
+
+  function sendMessage() {
+    let message = document.getElementById("message").value;
+
+    if (message.trim() !== "") {
+      websocket.send(message);
+      document.getElementById("message").value = "";
+      console.log("sent: send()");
+    }
+  }
+
+  function showMessage(message) {
+    $("#messages").append("<tr><td>" + message + "</td></tr>");
+  }
+
+  function setConnected(connected) {
+    $("#connect").prop("disabled", connected);
+    $("#disconnect").prop("disabled", !connected);
+    if (connected) {
+      $("#conversation").show();
+    } else {
+      $("#conversation").hide();
+    }
+    $("#messages").html("");
+  }
 </script>
 </body>
 </html>

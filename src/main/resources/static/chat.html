@@ -1,0 +1,112 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <title>Chat WebSocket</title>
+  <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css"
+        integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
+  <link href="main.css" rel="stylesheet">
+  <script src="https://code.jquery.com/jquery-3.1.1.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/@stomp/stompjs@7.0.0/bundles/stomp.umd.min.js"></script>
+  <script src="/websocket.js"></script>
+  <style>
+    body {
+      background-color: #97B4E1;
+      font-family: Arial, sans-serif;
+      margin: 0;
+      padding: 0;
+      height: 100vh;
+      display: flex;
+      flex-direction: column;
+    }
+    #header {
+      display: flex;
+      justify-content: flex-end;
+      padding: 10px 20px;
+      background-color: #f8f8f8;
+      box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+    }
+    #main-content {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      padding: 20px;
+    }
+    #conversation {
+      background-color: #fff;
+      border-radius: 5px;
+      padding: 20px;
+      box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+      flex: 1;
+      overflow-y: auto;
+      height: 500px; /* 채팅방 컨테이너의 세로 길이 증가 */
+    }
+    #messages {
+      padding: 10px 20px;
+      border-radius: 20px;
+      margin-bottom: 10px;
+      max-width: 70%;
+      word-wrap: break-word;
+    }
+    #messageInput {
+      display: flex;
+      padding: 10px;
+      background-color: #f8f8f8;
+      border-top: 1px solid #ddd;
+      width: 61%; /* 입력창을 화면 전체 너비로 설정 */
+      margin: 0 auto;
+    }
+    #message {
+      margin-right: 10px;
+      flex: 1;
+      width: 70%; /* 입력창 가로 길이 줄임 */
+    }
+    #send {
+      flex-shrink: 0;
+    }
+    .message-row {
+      padding: 10px;
+      border-bottom: 1px solid #ddd;
+    }
+    .message-row:last-child {
+      border-bottom: none;
+    }
+  </style>
+</head>
+<body>
+<noscript>
+  <h2 style="color: #ff0000">Seems your browser doesn't support Javascript! Websocket relies on Javascript being enabled. Please enable Javascript and reload this page!</h2>
+</noscript>
+
+<div id="header">
+  <button id="connect" class="btn btn-default" type="button">Connect</button>
+  <button id="disconnect" class="btn btn-default" disabled="disabled" type="button">Disconnect</button>
+</div>
+
+<div id="main-content" class="container">
+  <div class="row">
+    <div class="col-md-12">
+      <div id="conversation">
+        <div id="message-box" style="overflow-y: auto; max-height: 100%;">
+          <table class="table table-striped">
+            <thead>
+            <tr>
+              <th>채팅방</th>
+            </tr>
+            </thead>
+            <tbody id="messages"></tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div id="messageInput">
+  <input type="text" id="message" class="form-control" placeholder="메시지를 입력해주세요">
+  <button id="send" class="btn btn-default">전송</button>
+</div>
+
+</body>
+</html>

@@ -7,6 +7,8 @@ import BUMIL.Secondhand_Library.domain.board.entity.BoardEntity;
 import BUMIL.Secondhand_Library.domain.board.repository.BoardRepository;
 import BUMIL.Secondhand_Library.domain.book.entity.BookEntity;
 import BUMIL.Secondhand_Library.domain.book.entity.Repository.BookRepository;
+import BUMIL.Secondhand_Library.domain.chatRoom.entity.ChatRoomEntity;
+import BUMIL.Secondhand_Library.domain.chatRoom.repository.ChatRoomRepository;
 import BUMIL.Secondhand_Library.domain.member.entity.MemberEntity;
 import BUMIL.Secondhand_Library.domain.member.repository.MemberRepository;
 import BUMIL.Secondhand_Library.global.CategoryEnum;
@@ -26,6 +28,7 @@ public class BoardService {
     private final BoardRepository boardRepository;
     private final MemberRepository memberRepository;
     private final BookRepository bookRepository;
+    private final ChatRoomRepository chatRoomRepository;
 
     @Transactional
     public BoardEntity createBoard(BoardCreateDto boardCreateDto, Authentication authentication) {
@@ -45,6 +48,15 @@ public class BoardService {
                 .build();
 
         BoardEntity savedBoard = boardRepository.save(board);
+
+        //글 생성시 채팅방 자동생성
+        ChatRoomEntity chatRoom = ChatRoomEntity.builder()
+                .book(book)
+                .board(savedBoard)
+                .receiver(member)
+                .build();
+
+        chatRoomRepository.save(chatRoom);
 
         member.getBoards().add(savedBoard);
         memberRepository.save(member);
