@@ -1,5 +1,5 @@
 <header class="header" th:fragment="header">
-   <a  th:href="@{/}"> <h1 class="title">구제서재</h1></a>
+    <a th:href="@{/}"><h1 class="title">구제서재</h1></a>
     <div class="header-controls">
         <p class="subtitle">나만의 구제서재를 만들어보세요!</p>
         <button class="profile-button">
@@ -21,10 +21,11 @@
         </button>
         <div class="profile">
             <img th:src="@{/img/profile.png}" alt="Profile Image" class="profile-img">
-            <p class="profile-email">user@example.com</p>
+            <p class="profile-email">로그인 정보를 가져오는 중...</p>
             <div class="profile-buttons">
-                <a href="#" class="profile-button">로그인</a>
-                <a href="#" class="profile-button">마이페이지</a>
+                <a href="/login" class="profile-button" id="login-btn">로그인</a>
+                <a href="#" class="profile-button" id="logout-btn" style="display:none;">로그아웃</a>
+                <a href="/mypage" class="profile-button">마이페이지</a>
                 <a href="#" class="profile-button">개인정보 변경</a>
             </div>
             <div class="navigation">
@@ -34,7 +35,66 @@
             </div>
         </div>
     </div>
+    <script>
+        window.onload = function() {
+            const accessToken = localStorage.getItem('accessToken');
+            const profileEmail = document.querySelector('.profile-email');
+            const loginBtn = document.getElementById('login-btn');
+            const logoutBtn = document.getElementById('logout-btn');
+
+            if (accessToken) {
+                fetch('/api/userinfo', {
+                    method: 'GET',
+                    headers: {
+                        'Authorization': 'Bearer ' + accessToken
+                    }
+                })
+                .then(response => {
+                    if (response.ok) {
+                        return response.json();
+                    } else {
+                        throw new Error('네트워크 응답이 좋지 않습니다.');
+                    }
+                })
+                .then(user => {
+                    profileEmail.innerText = `사용자 이메일: ${user.email}`;
+                    loginBtn.style.display = 'none';
+                    logoutBtn.style.display = 'block';
+                })
+                .catch(error => {
+                    console.error('로그인 정보를 가져오는 도중 오류가 발생했습니다:', error);
+                    profileEmail.innerText = '로그인 오류';
+                });
+
+                logoutBtn.addEventListener('click', function() {
+                    fetch('/logout/auth', {
+                        method: 'DELETE',
+                        headers: {
+                            'Authorization': 'Bearer ' + accessToken
+                        }
+                    })
+                    .then(response => {
+                        if (response.ok) {
+                            localStorage.removeItem('accessToken');
+                            localStorage.removeItem('refreshToken');
+                            window.location.href = '/';
+                        } else {
+                            throw new Error('로그아웃 실패');
+                        }
+                    })
+                    .catch(error => {
+                        console.error('로그아웃 도중 오류가 발생했습니다:', error);
+                    });
+                });
+            } else {
+                profileEmail.innerText = '로그인되지 않음';
+                loginBtn.style.display = 'block';
+                logoutBtn.style.display = 'none';
+            }
+        };
+    </script>
 </header>
+
 <div class="search-bar">
     <input
             class="search-input"
