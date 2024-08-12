@@ -1,35 +1,50 @@
 package BUMIL.Secondhand_Library.controller;
 
-import BUMIL.Secondhand_Library.domain.book.entity.APIClient.AladdinAPIClient;
-import BUMIL.Secondhand_Library.domain.book.entity.APIClient.LibraryAPIClient;
+import BUMIL.Secondhand_Library.domain.book.DTO.MemberSelectionDTO;
+
+import BUMIL.Secondhand_Library.domain.book.Service.APIService;
+import BUMIL.Secondhand_Library.domain.book.entity.BookEntity;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.stereotype.Controller;
+import org.springframework.ui.Model;
+import org.springframework.web.bind.annotation.*;
 
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import java.util.List;
 
-import java.io.IOException;
-
-@RestController
+@Controller
 @RequestMapping("/book")
 public class BookController {
 
     @Autowired
-    private AladdinAPIClient aladdinAPIClient;
+    APIService recommendationService;
 
-    @Autowired
-    private LibraryAPIClient libraryAPIClient;
+//    @GetMapping("/test/{bookName}")
+//    public String test(@PathVariable String bookName) throws IOException {
+//        aladdinAPIClient.searchBooks(bookName);
+//        return "검색 완료";
+//    }
+//
+//    @GetMapping("/text/add")
+//    public String tt() throws IOException {
+//        libraryAPIClient.initializePopularBooks();
+//        return "검색 완료";
+//    }
 
-    @GetMapping("/test/{bookName}")
-    public String test(@PathVariable String bookName) throws IOException {
-        aladdinAPIClient.searchBooks(bookName);
-        return "검색 완료";
+
+    @GetMapping("/recommendations")
+    public String recommendations(){
+        return "Book/recommendations";
     }
 
-    @GetMapping("/text/add")
-    public String tt() throws IOException {
-        libraryAPIClient.searchPopularBooks();
-        return "검색 완료";
+    @PostMapping("/recommendations")
+    public String recommendations(MemberSelectionDTO memberSelectionDto , Model model){
+        List<BookEntity> recommendedBooks = recommendationService.searchPopularBooks(
+                memberSelectionDto.getSex(),
+                memberSelectionDto.getAge(),
+                memberSelectionDto.getLocation(),
+                memberSelectionDto.getInterest()
+        );
+        model.addAttribute("recommendedBooks", recommendedBooks);
+        return "Book/recommendationsList";
     }
 }
