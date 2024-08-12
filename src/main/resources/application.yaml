@@ -31,5 +31,5 @@ jwt:
 #kakao
 kakao:
   auth:
-    client_id: 22b07a3b40ba23790d2c986f361a0cbf
-    redirect_uri: http://localhost:8080
+    client_id: bc9537699d03799a297967214e3bbd2e
+    redirect_uri: http://localhost:8080/login/auth

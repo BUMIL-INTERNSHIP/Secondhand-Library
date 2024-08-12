@@ -61,7 +61,7 @@
                         th:src="${bookEntity.coverImg}"
                         alt="Book cover"
                 />
-                <button class="wishlist-button">
+                <button class="wishlist-button" th:data-book-id="${bookEntity.bookId}">
                     <svg
                             xmlns="http://www.w3.org/2000/svg"
                             width="24"
@@ -153,5 +153,27 @@
         </div>
     </section>
 </div>
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        document.querySelector('.wishlist-button').addEventListener('click', function() {
+            const bookId = this.getAttribute('data-book-id');
+
+            fetch(`/book/add-to-wishlist/${bookId}`, {
+                method: 'POST',
+                headers: {
+                    'Authorization': 'Bearer ' + localStorage.getItem('accessToken')
+                }
+            })
+            .then(response => {
+                if (response.ok) {
+                    alert('Book added to wishlist');
+                } else {
+                    alert('Failed to add book');
+                }
+            })
+            .catch(error => console.error('Error:', error));
+        });
+    });
+</script>
 </body>
 </html>

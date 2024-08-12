@@ -1,0 +1,246 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>마이페이지</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Gowun+Batang&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Gowun Batang', serif;
+            background-color: #97B4E1;
+            color: #333;
+            margin: 0;
+            padding: 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100%;
+        }
+        .container {
+            display: flex;
+            background-color: #e6f7ff;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+            width: 80%;
+            max-width: 1200px;
+        }
+        .sidebar {
+            width: 25%;
+            padding: 20px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            border-right: 1px solid #b3daff;
+        }
+        .profile-pic {
+            width: 100px;
+            height: 100px;
+            border-radius: 50%;
+            background-color: #ddd;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-size: 50px;
+            color: #aaa;
+            margin-bottom: 20px;
+        }
+        .info {
+            width: 100%;
+            background-color: white;
+            padding: 10px;
+            border-radius: 10px;
+            margin-bottom: 20px;
+            box-shadow: 0 0 5px rgba(0, 0, 0, 0.1);
+            text-align: center;
+        }
+        .content {
+            width: 75%;
+            padding: 20px;
+        }
+        .content h2 {
+            margin-bottom: 20px;
+            color: #333;
+        }
+        .bookshelf {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 20px;
+        }
+        .book {
+            background-color: white;
+            padding: 10px;
+            border-radius: 10px;
+            box-shadow: 0 0 5px rgba(0, 0, 0, 0.1);
+            text-align: center;
+        }
+        .book img {
+            width: 100%;
+            border-radius: 10px;
+            margin-bottom: 10px;
+        }
+        .book h3 {
+            margin: 10px 0;
+            font-size: 1.1em;
+        }
+        .book p {
+            font-size: 0.9em;
+            color: #777;
+        }
+        .book .favorite {
+            margin-top: 10px;
+            color: red;
+            font-size: 1.2em;
+            cursor: pointer;
+        }
+        .pagination {
+            display: flex;
+            justify-content: center;
+            margin-top: 20px;
+        }
+        .pagination button {
+            background-color: #e6f7ff;
+            border: 1px solid #b3daff;
+            padding: 5px 10px;
+            margin: 0 5px;
+            cursor: pointer;
+        }
+        .pagination button.disabled {
+            background-color: #ccc;
+            cursor: not-allowed;
+        }
+    </style>
+    <script>
+        let currentPage = 1; // 전역 변수로 currentPage를 정의합니다.
+        const booksPerPage = 6;
+
+        window.onload = function() {
+            const accessToken = localStorage.getItem('accessToken');
+            if (accessToken) {
+                fetch('/api/userinfo', {
+                    method: 'GET',
+                    headers: {
+                        'Authorization': 'Bearer ' + accessToken,
+                        'Accept': 'application/json'
+                    }
+                })
+                .then(response => response.json())
+                .then(user => {
+                    document.querySelector('.profile-pic').innerText = '👤';
+                    document.querySelector('.info').innerHTML = `
+                        <div>${user.memberName}</div>
+                        <div>이메일: ${user.email}</div>
+                    `;
+                    loadBooks(currentPage);
+                })
+                .catch(error => console.error('Error:', error));
+            } else {
+                console.error('액세스 토큰이 없습니다.');
+            }
+        };
+
+        function loadBooks(page) {
+            const accessToken = localStorage.getItem('accessToken');
+            if (accessToken) {
+                fetch(`/mypage/bookshelf?page=${page}&size=${booksPerPage}`, {
+                    method: 'GET',
+                    headers: {
+                        'Authorization': 'Bearer ' + accessToken,
+                        'Accept': 'application/json'
+                    }
+                })
+                .then(response => response.json())
+                .then(data => {
+                    console.log("Bookshelf data received: ", data);
+                    const bookshelf = document.querySelector('.bookshelf');
+                    bookshelf.innerHTML = '';
+                    if (data.bookDtoList && data.bookDtoList.length > 0) {
+                        data.bookDtoList.forEach(book => {
+                            const bookItem = document.createElement('div');
+                            bookItem.classList.add('book');
+                            bookItem.innerHTML = `
+                                <a href="/book/${book.bookId}">
+                                    <img src="${book.coverImg}" alt="Book cover">
+                                </a>
+                                <h3>${book.bookName}</h3>
+                                <p>${book.author}</p>
+                                <button class="favorite" onclick="deleteBook(${book.bookId})">삭제</button>
+                            `;
+                            bookshelf.appendChild(bookItem);
+                        });
+                        updatePagination(data.totalPages, page);
+                    } else {
+                        bookshelf.innerHTML = '<p>서재에 책이 없습니다.</p>';
+                    }
+                })
+                .catch(error => console.error('Error:', error));
+            } else {
+                console.error('액세스 토큰이 없습니다.');
+            }
+        }
+
+        function deleteBook(bookId) {
+            const accessToken = localStorage.getItem('accessToken');
+            fetch(`/mypage/bookshelf/${bookId}`, {
+                method: 'DELETE',
+                headers: {
+                    'Authorization': 'Bearer ' + accessToken,
+                    'Accept': 'application/json'
+                }
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    loadBooks(currentPage); // 책 삭제 후 현재 페이지의 책 목록을 다시 로드합니다.
+                } else {
+                    console.error('Failed to delete book');
+                }
+            })
+            .catch(error => console.error('Error:', error));
+        }
+
+        function updatePagination(totalPages, currentPage) {
+            const pagination = document.querySelector('.pagination');
+            pagination.innerHTML = '';
+            for (let i = 1; i <= totalPages; i++) {
+                const button = document.createElement('button');
+                button.innerText = i;
+                if (i === currentPage) {
+                    button.classList.add('disabled');
+                } else {
+                    button.onclick = () => {
+                        currentPage = i;
+                        loadBooks(i);
+                    };
+                }
+                pagination.appendChild(button);
+            }
+        }
+    </script>
+</head>
+<body>
+<div class="container">
+    <div class="sidebar">
+        <div class="profile-pic">👤</div>
+        <div class="info">
+            <!-- 사용자 정보가 여기 표시됩니다 -->
+        </div>
+        <div class="info">
+            <div>내 채팅방 바로가기</div>
+        </div>
+    </div>
+    <div class="content">
+        <h2>나의 서재</h2>
+        <div class="bookshelf">
+            <!-- 책이 여기에 표시됩니다 -->
+        </div>
+        <div class="pagination">
+            <!-- 페이지 네비게이션 버튼이 여기에 표시됩니다 -->
+        </div>
+    </div>
+</div>
+</body>
+</html>

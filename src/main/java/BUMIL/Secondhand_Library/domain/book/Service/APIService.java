@@ -22,15 +22,8 @@ public class APIService {
      return   libraryAPIClient.searchPopularBooks(sex,age,location,interest);
     }
 
-    public void checkUsedStockInBranch(String isbn) {
-        List<String> store =  aladdinAPIClient.findStore(isbn);;
-        if (!store.isEmpty()){
-            for (String s : store){
-                System.out.println(s);
-            }
-        }else{
-            System.out.println("재고가 없습니다.");
-        }
+    public List<String> checkUsedStockInBranch(String isbn) {
+        return aladdinAPIClient.findStore(isbn);
     }
 
     public String[] retrieveBookInfo(String bookName){

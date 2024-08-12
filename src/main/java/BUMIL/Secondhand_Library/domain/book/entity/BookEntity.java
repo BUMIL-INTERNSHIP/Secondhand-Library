@@ -4,6 +4,8 @@ import BUMIL.Secondhand_Library.domain.board.entity.BoardEntity;
 import BUMIL.Secondhand_Library.domain.quote.entity.QuoteEntity;
 import BUMIL.Secondhand_Library.domain.chatRoom.entity.ChatRoomEntity;
 import BUMIL.Secondhand_Library.domain.library.entity.LibraryEntity;
+import com.fasterxml.jackson.annotation.JsonBackReference;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import jakarta.persistence.*;
 import lombok.*;
 
@@ -16,6 +18,7 @@ import java.util.List;
 @Builder
 @Entity
 @Table(name="book")
+@JsonIgnoreProperties({"hibernateLazyInitializer", "handler"})
 public class BookEntity {
 
     @Id
@@ -51,7 +54,6 @@ public class BookEntity {
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "library_id")
+    @JsonBackReference
     private LibraryEntity library;
-
-
 }
