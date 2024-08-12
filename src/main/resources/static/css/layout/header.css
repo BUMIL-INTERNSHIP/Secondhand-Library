@@ -1,0 +1,151 @@
+@font-face {
+    font-family: 'goorm-sans-bold';
+    src: url('https://fastly.jsdelivr.net/gh/projectnoonnu/2408@1.0/goorm-sans-bold.woff2') format('woff2');
+    font-weight: 700;
+    font-style: normal;
+}
+
+.header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    width: 100%;
+    max-width: 1200px;
+    padding: 16px 0;
+}
+
+
+a{
+    text-decoration: none;
+}
+
+.title {
+    font-size: 24px;
+    font-weight: bold;
+    color: black;
+}
+
+.header-controls {
+    position: relative;
+    display: flex;
+    align-items: center;
+    gap: 16px;
+}
+
+.subtitle {
+    font-size: 14px;
+}
+
+/*.menu-button {*/
+/*    display: flex;*/
+/*    align-items: center;*/
+/*    justify-content: center;*/
+/*    width: 40px;*/
+/*    height: 40px;*/
+/*    background: none;*/
+/*    border: none;*/
+/*    cursor: pointer;*/
+/*}*/
+
+
+
+.profile-button {
+    position: relative;
+}
+
+.profile {
+    position: absolute;
+    top: 100%;
+    right: 0;
+    width: 500px;
+    background: #fff;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 1);
+    border-radius: 8px;
+    padding: 16px;
+    display: none;
+    z-index: 1000;
+}
+
+.profile.show {
+    display: block;
+}
+
+.profile-img {
+    width: 60px;
+    height: 60px;
+    border-radius: 50%;
+    object-fit: cover;
+    position: absolute;
+    top: 16px;
+    left: 16px;
+}
+
+.profile-email {
+    margin: 16px 0 0 320px;
+    font-size: 14px;
+    color: #333;
+}
+
+.profile-buttons {
+    margin-top: 80px;
+    border-bottom: 1px solid #ccc;
+    padding-bottom: 10px;
+}
+
+.navigation {
+    padding-top: 10px;
+}
+
+.profile-button,
+.navigation-button {
+    display: block;
+    margin: 8px 0;
+    padding: 10px;
+    text-align: center;
+    background: #f1f1f1;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    text-decoration: none;
+    color: #333;
+    transition: background-color 0.3s, color 0.3s;
+}
+
+.profile-button:hover,
+.navigation-button:hover{
+    background: #e1e1e1;
+    color: #000;
+}
+
+
+
+
+
+.search-bar {
+    display: flex;
+    align-items: center;
+    width: 100%;
+    max-width: 1200px;
+    margin: 16px 0;
+    position: relative;
+}
+
+.search-input {
+    flex: 1;
+    height: 50px;
+    padding: 8px 16px;
+    border: 1px solid #ccc;
+    border-radius: 20px;
+}
+
+.search-button {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 40px;
+    height: 40px;
+    margin-left: 8px;
+    background: none;
+    border: none;
+    cursor: pointer;
+}
+

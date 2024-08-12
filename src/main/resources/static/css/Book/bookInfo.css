@@ -1,14 +1,15 @@
 @font-face {
-    font-family: 'MaruBuri';
-    src: url(https://hangeul.pstatic.net/hangeul_static/webfont/MaruBuri/MaruBuri-Regular.eot);
-    src: url(https://hangeul.pstatic.net/hangeul_static/webfont/MaruBuri/MaruBuri-Regular.eot?#iefix) format("embedded-opentype"), url(https://hangeul.pstatic.net/hangeul_static/webfont/MaruBuri/MaruBuri-Regular.woff2) format("woff2"), url(https://hangeul.pstatic.net/hangeul_static/webfont/MaruBuri/MaruBuri-Regular.woff) format("woff"), url(https://hangeul.pstatic.net/hangeul_static/webfont/MaruBuri/MaruBuri-Regular.ttf) format("truetype");
+    font-family: 'goorm-sans-bold';
+    src: url('https://fastly.jsdelivr.net/gh/projectnoonnu/2408@1.0/goorm-sans-bold.woff2') format('woff2');
+    font-weight: 700;
+    font-style: normal;
 }
 * {
 
     box-sizing: border-box;
     margin: 0;
     padding: 0;
-    font-family: 'MaruBuri',  sans-serif; /* 폰트 적용 */
+    font-family: 'goorm-sans-bold',  sans-serif; /* 폰트 적용 */
 }
 
 body {
@@ -29,70 +30,6 @@ body {
     background: #F1FAFF;
     box-shadow: 0 4px 8px rgba(0, 0, 0, 0.6); /* 그림자 효과 */
     border-radius: 10px;
-}
-
-
-.header {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    width: 100%;
-    max-width: 1200px;
-    padding: 16px 0;
-}
-
-.title {
-    font-size: 24px;
-    font-weight: bold;
-}
-
-.header-controls {
-    display: flex;
-    align-items: center;
-    gap: 16px;
-}
-
-.subtitle {
-    font-size: 14px;
-}
-
-.menu-button {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    width: 40px;
-    height: 40px;
-    background: none;
-    border: none;
-    cursor: pointer;
-}
-
-.search-bar {
-    display: flex;
-    align-items: center;
-    width: 100%;
-    max-width: 1200px;
-    margin: 16px 0;
-}
-
-.search-input {
-    flex: 1;
-    height: 40px;
-    padding: 8px 16px;
-    border: 1px solid #ccc;
-    border-radius: 20px;
-}
-
-.search-button {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    width: 40px;
-    height: 40px;
-    margin-left: 8px;
-    background: none;
-    border: none;
-    cursor: pointer;
 }
 
 .main-content {
@@ -166,7 +103,7 @@ body {
 
 .bookmark-label {
     font-size: 14px;
-    font-weight: medium;
+    /*font-weight: medium;*/
 }
 
 .bookmark-text {
@@ -239,3 +176,63 @@ body {
     border-radius: 8px;
     cursor: pointer;
 }
+
+.profile-button {
+    position: relative; /* For proper positioning of the profile menu */
+}
+
+.profile {
+    position: absolute; /* Position the profile menu absolutely */
+    top: 100%; /* Place it right below the header-controls */
+    right: 0; /* Align it to the right */
+    width: 250px; /* Set a width for the profile menu */
+    background: #fff; /* Background color */
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 1); /* Add shadow for better visibility */
+    border-radius: 8px; /* Rounded corners */
+    padding: 16px; /* Padding inside the profile menu */
+    display: none; /* Hide by default */
+    z-index: 1000; /* Ensure it appears above other elements */
+}
+
+.profile.show {
+    display: block; /* Show when the 'show' class is added */
+}
+
+.profile-img {
+    width: 50px; /* Adjust size as needed */
+    height: 50px; /* Adjust size as needed */
+    border-radius: 50%; /* Make the image round */
+    object-fit: cover; /* Ensure the image fits well within the circle */
+    position: absolute; /* Position the image inside the profile menu */
+    top: 16px; /* Distance from the top */
+    left: 16px; /* Distance from the left */
+}
+
+.profile-email {
+    margin: 16px 0 0 80px; /* Adjust margin to position it properly */
+    font-size: 14px;
+    color: #333;
+}
+
+.profile-buttons {
+    margin-top: 80px; /* Push the buttons down below the profile image and email */
+}
+
+.profile-button {
+    display: block; /* Make each button occupy the full width */
+    margin: 8px 0; /* Space between buttons */
+    padding: 10px;
+    text-align: center;
+    background: #f1f1f1; /* Background color */
+    border: 1px solid #ddd; /* Border color */
+    border-radius: 4px; /* Rounded corners for buttons */
+    text-decoration: none; /* Remove underline */
+    color: #333; /* Text color */
+    transition: background-color 0.3s, color 0.3s; /* Transition effects */
+}
+
+.profile-button:hover {
+    background: #e1e1e1; /* Hover background color */
+    color: #000; /* Hover text color */
+}
+

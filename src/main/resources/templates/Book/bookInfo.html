@@ -5,55 +5,11 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>구제서재</title>
     <link rel="stylesheet" th:href="@{/css/Book/bookInfo.css}" />
+    <link rel="stylesheet" th:href="@{/css/layout/header.css}" />
 </head>
 <body>
 <div class="container">
-    <header class="header">
-        <h1 class="title">구제서재</h1>
-        <div class="header-controls">
-            <p class="subtitle">나만의 구제서재를 만들어보세요!</p>
-            <button class="menu-button">
-                <svg
-                        xmlns="http://www.w3.org/2000/svg"
-                        width="24"
-                        height="24"
-                        viewBox="0 0 24 24"
-                        fill="none"
-                        stroke="currentColor"
-                        stroke-width="2"
-                        stroke-linecap="round"
-                        stroke-linejoin="round"
-                >
-                    <line x1="4" x2="20" y1="12" y2="12"></line>
-                    <line x1="4" x2="20" y1="6" y2="6"></line>
-                    <line x1="4" x2="20" y1="18" y2="18"></line>
-                </svg>
-            </button>
-        </div>
-    </header>
-    <div class="search-bar">
-        <input
-                class="search-input"
-                placeholder="검색어를 입력하세요"
-                type="search"
-        />
-        <button class="search-button">
-            <svg
-                    xmlns="http://www.w3.org/2000/svg"
-                    width="24"
-                    height="24"
-                    viewBox="0 0 24 24"
-                    fill="none"
-                    stroke="currentColor"
-                    stroke-width="2"
-                    stroke-linecap="round"
-                    stroke-linejoin="round"
-            >
-                <circle cx="11" cy="11" r="8"></circle>
-                <path d="m21 21-4.3-4.3"></path>
-            </svg>
-        </button>
-    </div>
+    <div th:replace="~{Layout/header :: header}"></div>
     <section class="main-content">
         <div class="book-details">
             <div class="book-image">
@@ -153,6 +109,7 @@
         </div>
     </section>
 </div>
+<script th:src="@{/js/Member/profile.js}"></script>
 <script>
     document.addEventListener('DOMContentLoaded', function() {
         document.querySelector('.wishlist-button').addEventListener('click', function() {
