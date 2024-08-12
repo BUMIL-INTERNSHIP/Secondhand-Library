@@ -1,4 +1,4 @@
-package BUMIL.Secondhand_Library.domain.bookMark.entity;
+package BUMIL.Secondhand_Library.domain.quote.entity;
 
 import BUMIL.Secondhand_Library.domain.book.entity.BookEntity;
 import BUMIL.Secondhand_Library.domain.member.entity.MemberEntity;
@@ -17,12 +17,12 @@ import java.time.LocalDate;
 @AllArgsConstructor
 @Builder
 @Entity
-@Table(name="bookmark")
-public class BookMarkEntity extends BasicEntity {
+@Table(name="Quote")
+public class QuoteEntity extends BasicEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long bookMarkId;
+    private Long QuoteId;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "book_id")
@@ -33,7 +33,16 @@ public class BookMarkEntity extends BasicEntity {
     @JsonBackReference
     private MemberEntity member;
 
-    private String content;
+    private String author; //인물 혹 글쓴이
 
-    private LocalDate bookMarkDate;
+    private String quote; //인용구
+
+    private LocalDate quoteDate;
+
+    @PrePersist
+    protected void onCreate() {
+        if (this.quoteDate == null) {
+            this.quoteDate = LocalDate.now();
+        }
+    }
 }

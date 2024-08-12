@@ -5,7 +5,6 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>구제서재</title>
     <link rel="stylesheet" th:href="@{/css/Book/bookInfo.css}" />
-
 </head>
 <body>
 <div class="container">
@@ -83,8 +82,8 @@
             </div>
             <div class="book-info">
                 <h2 class="book-title" th:text="${bookEntity.bookName}"></h2>
-                <p class="book-price" th:text="'₩' + ${bookEntity.price}"></    p>
-                <p class="book-author" th:text="${bookEntity.author}"></p> q
+                <p class="book-price" th:text="'₩' + ${bookEntity.price}"></p>
+                <p class="book-author" th:text="${bookEntity.author}"></p>
                 <div class="bookmark-section">
                     <label for="preference" class="bookmark-label">줄거리</label>
                     <div

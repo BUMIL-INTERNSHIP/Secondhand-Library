@@ -1,7 +1,7 @@
 package BUMIL.Secondhand_Library.domain.book.entity;
 
 import BUMIL.Secondhand_Library.domain.board.entity.BoardEntity;
-import BUMIL.Secondhand_Library.domain.bookMark.entity.BookMarkEntity;
+import BUMIL.Secondhand_Library.domain.quote.entity.QuoteEntity;
 import BUMIL.Secondhand_Library.domain.chatRoom.entity.ChatRoomEntity;
 import BUMIL.Secondhand_Library.domain.library.entity.LibraryEntity;
 import com.fasterxml.jackson.annotation.JsonBackReference;
@@ -50,7 +50,7 @@ public class BookEntity {
     private List<ChatRoomEntity> chatRooms;
 
     @OneToMany(mappedBy = "book", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
-    private List<BookMarkEntity> bookMarks;
+    private List<QuoteEntity> bookMarks;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "library_id")
