@@ -47,6 +47,12 @@
             font-size: 50px;
             color: #aaa;
             margin-bottom: 20px;
+            overflow: hidden; /* 이미지가 프로필 영역에 맞게 잘리도록 설정 */
+        }
+        .profile-pic img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover; /* 이미지가 영역을 꽉 채우도록 설정 */
         }
         .info {
             width: 100%;
@@ -129,7 +135,8 @@
                 })
                 .then(response => response.json())
                 .then(user => {
-                    document.querySelector('.profile-pic').innerText = '👤';
+                    const profilePicElement = document.querySelector('.profile-pic');
+                    profilePicElement.innerHTML = `<img src="${user.profileImage}" alt="Profile Image">`;
                     document.querySelector('.info').innerHTML = `
                         <div>${user.memberName}</div>
                         <div>이메일: ${user.email}</div>

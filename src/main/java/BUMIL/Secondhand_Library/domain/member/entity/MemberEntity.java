@@ -27,6 +27,8 @@ public class MemberEntity  {
 
     private String email;
 
+    private String profileImage;
+
     private Long outhId;
 
     private String refreshToken;

@@ -43,10 +43,11 @@ public class AuthService {
 
         String nickname = properties.getAsJsonObject().get("nickname").getAsString();
         String email = kakao_account.getAsJsonObject().get("email").getAsString();
+        String profileImage = kakao_account.getAsJsonObject().get("profile").getAsJsonObject().get("profile_image_url").getAsString();
 
         MemberEntity user = memberRepository.findByOuthId(outhId);
         if(user == null)
-            return register(outhId, nickname, email);
+            return register(outhId, nickname, email, profileImage);
 
         String accessToken = jwtTokenProvider.createAccessToken(outhId);
         String refreshToken = jwtTokenProvider.createRefreshToken(outhId);
@@ -81,7 +82,7 @@ public class AuthService {
         return memberRepository.findByOuthId(Long.valueOf(authentication.getName()));
     }
 
-    private AuthLoginRes register(Long outhId, String nickname, String email){
+    private AuthLoginRes register(Long outhId, String nickname, String email, String profileImage){
         String accessToken = jwtTokenProvider.createAccessToken(outhId);
         String refreshToken = jwtTokenProvider.createRefreshToken(outhId);
 
@@ -89,6 +90,7 @@ public class AuthService {
                 .outhId(outhId)
                 .memberName(nickname)
                 .email(email)
+                .profileImage(profileImage)
                 .refreshToken(refreshToken)
                 .build();
 

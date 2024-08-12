@@ -20,7 +20,7 @@
             </svg>
         </button>
         <div class="profile">
-            <img th:src="@{/img/profile.png}" alt="Profile Image" class="profile-img">
+            <img th:src="@{/img/profile.png}" alt="Profile Image" class="profile-img" id="profile-img">
             <p class="profile-email">로그인 정보를 가져오는 중...</p>
             <div class="profile-buttons">
                 <a href="/login" class="profile-button" id="login-btn">로그인</a>
@@ -39,6 +39,7 @@
         window.onload = function() {
             const accessToken = localStorage.getItem('accessToken');
             const profileEmail = document.querySelector('.profile-email');
+            const profileImg = document.getElementById('profile-img');
             const loginBtn = document.getElementById('login-btn');
             const logoutBtn = document.getElementById('logout-btn');
 
@@ -58,6 +59,7 @@
                 })
                 .then(user => {
                     profileEmail.innerText = `사용자 이메일: ${user.email}`;
+                    profileImg.src = user.profileImage;  // 프로필 이미지를 설정
                     loginBtn.style.display = 'none';
                     logoutBtn.style.display = 'block';
                 })
