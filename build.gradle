@@ -28,6 +28,7 @@ dependencies {
 	testRuntimeOnly 'org.junit.platform:junit-platform-launcher'
 	annotationProcessor 'org.projectlombok:lombok'
 	compileOnly 'org.projectlombok:lombok'
+	implementation 'org.springframework.boot:spring-boot-starter-websocket'
 
 	//DB
 	implementation 'org.postgresql:postgresql:42.7.2'
