@@ -82,7 +82,7 @@
       align-items: flex-start;
       margin-top: 20px;
     }
-    .chat-button, .edit-button, .delete-button {
+    .chat-button {
       width: 100%;
       padding: 15px;
       font-size: 1.2em;
@@ -93,24 +93,10 @@
       text-align: center;
       margin-bottom: 10px;
       transition: background-color 0.3s ease;
-    }
-    .chat-button {
       background-color: #007bff;
     }
     .chat-button:hover {
       background-color: #0056b3;
-    }
-    .edit-button {
-      background-color: #6c757d;
-    }
-    .edit-button:hover {
-      background-color: #5a6268;
-    }
-    .delete-button {
-      background-color: #dc3545;
-    }
-    .delete-button:hover {
-      background-color: #c82333;
     }
     /* 팝업 스타일 */
     .popup-background {
@@ -164,8 +150,6 @@
     <p class="address" id="address">주소: 주소 정보</p>
     <div class="buttons-container">
       <button class="chat-button" id="connect">채팅 하기</button>
-      <button class="edit-button" id="editButton" style="display:none;">수정</button>
-      <button class="delete-button" id="deleteButton" style="display:none;">삭제</button>
     </div>
   </div>
 </div>
@@ -185,7 +169,18 @@
       return;
     }
 
-    fetch(`/boards/${boardId}`)
+    const accessToken = localStorage.getItem('accessToken');
+
+    if (!accessToken) {
+      console.error('액세스 토큰이 없습니다.');
+      return;
+    }
+
+    fetch(`/boards/${boardId}`, {
+      headers: {
+        'Authorization': 'Bearer ' + accessToken
+      }
+    })
             .then(response => response.json())
             .then(data => {
               if (!data) {
@@ -207,14 +202,6 @@
                 window.location.href = 'http://localhost:8080/chat.html';
               });
 
-              const currentUserOuthId = data.currentUserOuthId;
-              if (!currentUserOuthId) {
-                document.getElementById('popupBackground').style.display = 'flex';
-              } else if (currentUserOuthId === data.memberOuthId) {
-                document.getElementById('editButton').style.display = 'inline-block';
-                document.getElementById('deleteButton').style.display = 'inline-block';
-              }
-
             })
             .catch(error => {
               console.error('데이터를 가져오는 중 오류가 발생했습니다:', error);
@@ -232,6 +219,7 @@
 
     window.location.href = 'chat.html';
   }
+
 
   function onMessage(receivedMessage) {
     showMessage(receivedMessage.data);

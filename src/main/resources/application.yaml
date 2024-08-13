@@ -2,15 +2,23 @@ spring:
   application:
     name: Secondhand-Library
   datasource:
-    url: jdbc:postgresql://localhost:5432/secondhand_library
+    url: jdbc:postgresql://localhost:5432/secondhand
     username: postgres
-    password: 0208
+    password: root
     driver-class-name: org.postgresql.Driver
+
   jpa:
+    defer-datasource-initialization: true
     show-sql: true
     database: postgresql
     hibernate:
       ddl-auto: update
+
+  sql:
+    init:
+      mode: always
+      platform: postgres
+
   web:
     resources:
       static-locations: classpath:/static/

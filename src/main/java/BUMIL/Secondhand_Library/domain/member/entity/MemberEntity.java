@@ -36,19 +36,4 @@ public class MemberEntity  {
     @OneToMany(mappedBy = "member", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
     private List<BoardEntity> boards;
 
-    @OneToMany(mappedBy = "receiver", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
-    private List<ChatRoomEntity> receivedChatRooms;
-
-    @OneToMany(mappedBy = "sender", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
-    private List<ChatRoomEntity> sentChatRooms;
-
-    @OneToMany(mappedBy = "sender", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
-    private List<MessageEntity> sentMessages;
-
-    //해당 회원이 참여하고 있는 모든 채팅방 리스트
-    public List<ChatRoomEntity> getChatRooms() {
-        return Stream.concat(receivedChatRooms.stream(), sentChatRooms.stream())
-                .collect(Collectors.toList());
-    }
-
 }

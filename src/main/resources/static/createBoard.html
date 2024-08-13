@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+!DOCTYPE html>
 <html lang="ko">
 <head>
   <meta charset="UTF-8">
@@ -45,7 +45,7 @@
       padding: 10px 20px;
       font-size: 16px;
       font-family: 'Gowun Batang', serif;
-      background-color: #4da6ff;
+      background-color: #97b4e1;
       color: white;
       border: none;
       border-radius: 5px;
@@ -55,7 +55,7 @@
       transition: background-color 0.3s ease;
     }
     .action-buttons button.selected {
-      background-color: #ff6347; /* 선택된 버튼의 배경색 변경 */
+      background-color: #3399ff; /* 선택된 버튼의 배경색 변경 */
     }
     label {
       margin: 10px 0 5px;
@@ -81,7 +81,7 @@
       padding: 10px 20px;
       font-size: 16px;
       font-family: 'Gowun Batang', serif;
-      background-color: #4da6ff;
+      background-color: #97b4e1;
       color: white;
       border: none;
       border-radius: 5px;
@@ -121,6 +121,13 @@
         const price = document.getElementById('price').value;
         const location = document.getElementById('location').value;
         const content = document.getElementById('content').value;
+        const accessToken = localStorage.getItem('accessToken');
+
+        if (!accessToken) {
+          alert('로그인이 필요합니다.');
+          window.location.href = '/login';
+          return;
+        }
 
         const boardCreateDto = {
           category: selectedCategory,
@@ -134,13 +141,14 @@
         fetch('/boards', {
           method: 'POST',
           headers: {
-            'Content-Type': 'application/json'
+            'Content-Type': 'application/json',
+            'Authorization': 'Bearer ' + accessToken // Authorization 헤더 추가
           },
           body: JSON.stringify(boardCreateDto)
         })
                 .then(response => {
                   if (response.ok) {
-                    window.location.href = '/boards'; // 게시글 목록 페이지로 리다이렉트
+                    window.location.href = '/board.html'; // 게시글 목록 페이지로 리다이렉트
                   } else {
                     return response.json().then(err => {
                       alert('오류가 발생했습니다: ' + err.message);
@@ -150,6 +158,7 @@
                 .catch(error => console.error('Error:', error));
       });
     });
+
   </script>
 </head>
 <body>
