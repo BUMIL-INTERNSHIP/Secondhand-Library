@@ -1,0 +1,225 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>쪽지 작성 - 중고 서재</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Gowun+Batang&display=swap" rel="stylesheet">
+  <style>
+    body {
+      font-family: 'Gowun Batang', serif;
+      background-color: #97B4E1;
+      color: #333;
+      margin: 0;
+      padding: 0;
+    }
+    .container {
+      width: 60%;
+      margin: 20px auto;
+      padding: 20px;
+      background-color: #e6f7ff;
+      border: 1px solid #b3daff;
+      border-radius: 10px;
+      box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+    }
+    .header {
+      text-align: center;
+      margin-bottom: 20px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+    .header img {
+      width: 50px;
+      height: 50px;
+      margin: 0 10px;
+    }
+    .header h1 {
+      margin: 0;
+      font-size: 2em;
+    }
+    form {
+      display: flex;
+      flex-direction: column;
+    }
+    label {
+      margin: 10px 0 5px;
+      font-weight: bold;
+    }
+    input[type="text"], textarea {
+      width: 100%;
+      padding: 10px;
+      margin-bottom: 15px;
+      font-size: 16px;
+      border: 1px solid #b3daff;
+      border-radius: 5px;
+    }
+    textarea {
+      height: 150px;
+      resize: vertical;
+    }
+    .buttons {
+      display: flex;
+      justify-content: flex-end;
+    }
+    .buttons button {
+      padding: 10px 20px;
+      font-size: 16px;
+      font-family: 'Gowun Batang', serif;
+      background-color: #97b4e1;
+      color: white;
+      border: none;
+      border-radius: 5px;
+      cursor: pointer;
+      margin-left: 10px;
+      outline: none;
+    }
+    .buttons button:hover {
+      background-color: #3399ff;
+    }
+    #responseMessage {
+      margin-top: 20px;
+    }
+    /* 팝업 스타일 */
+    .popup {
+      display: none;
+      position: fixed;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      padding: 20px;
+      background-color: white;
+      border: 1px solid #ddd;
+      border-radius: 10px;
+      box-shadow: 0 0 10px rgba(0, 0, 0, 0.2);
+      z-index: 1000;
+    }
+    .popup button {
+      padding: 10px 20px;
+      font-size: 16px;
+      background-color: #007bff;
+      color: white;
+      border: none;
+      border-radius: 5px;
+      cursor: pointer;
+      margin-top: 10px;
+    }
+    .popup button:hover {
+      background-color: #0056b3;
+    }
+    .popup-overlay {
+      display: none;
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background-color: rgba(0, 0, 0, 0.5);
+      z-index: 999;
+    }
+  </style>
+</head>
+<body>
+<div class="container">
+  <div class="header">
+    <img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQ3FQ9or16Bd8LHCJB90gEQkwKqGnZhX89O55skwvvgPVssWUdL4wGRBsXfxBj_QyWF&usqp=CAUg" alt="icon">
+    <h1>쪽지 작성</h1>
+    <img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQ3FQ9or16Bd8LHCJB90gEQkwKqGnZhX89O55skwvvgPVssWUdL4wGRBsXfxBj_QyWF&usqp=CAU" alt="icon">
+  </div>
+  <form id="messageForm">
+    <label for="receiverName">수신자 이름</label>
+    <input type="text" id="receiverName" name="receiverName" placeholder="수신자 이름을 입력하세요" required>
+
+    <label for="title">제목</label>
+    <input type="text" id="title" name="title" placeholder="제목을 입력하세요" required>
+
+    <label for="content">내용</label>
+    <textarea id="content" name="content" placeholder="내용을 입력하세요" required></textarea>
+
+    <div class="buttons">
+      <button type="submit">쪽지 보내기</button>
+    </div>
+  </form>
+  <div id="responseMessage"></div>
+</div>
+
+<div class="popup-overlay" id="popupOverlay"></div>
+<div class="popup" id="successPopup">
+  <p>쪽지를 성공적으로 전송하였습니다.</p>
+  <button id="closePopupButton">확인</button>
+</div>
+
+<script>
+  document.addEventListener('DOMContentLoaded', function() {
+    const urlParams = new URLSearchParams(window.location.search);
+    const boardId = urlParams.get('boardId'); // 이전 boardDetail 페이지의 boardId
+    const popupOverlay = document.getElementById('popupOverlay');
+    const successPopup = document.getElementById('successPopup');
+    const closePopupButton = document.getElementById('closePopupButton');
+
+    document.getElementById("messageForm").addEventListener("submit", function(event) {
+      event.preventDefault();
+
+      const receiverName = document.getElementById("receiverName").value;
+      const title = document.getElementById("title").value;
+      const content = document.getElementById("content").value;
+      const accessToken = localStorage.getItem('accessToken');
+
+      if (!accessToken) {
+        alert('로그인이 필요합니다.');
+        window.location.href = '/login';
+        return;
+      }
+
+      const messageDto = {
+        receiverName: receiverName,
+        title: title,
+        content: content,
+        senderName: "" // 서버에서 자동으로 설정됨
+      };
+
+      fetch("/messages", {
+        method: "POST",
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': 'Bearer ' + accessToken
+        },
+        body: JSON.stringify(messageDto)
+      })
+              .then(response => {
+                if (response.ok) {
+                  // 팝업을 띄우기
+                  popupOverlay.style.display = 'block';
+                  successPopup.style.display = 'block';
+                } else {
+                  return response.json().then(err => {
+                    alert('오류가 발생했습니다: ' + err.message);
+                  });
+                }
+              })
+              .catch(error => {
+                console.error('Error:', error);
+                document.getElementById("responseMessage").innerHTML = `
+          <div class="alert alert-danger" role="alert">
+            메시지를 보내는 중 오류가 발생했습니다.
+          </div>
+        `;
+              });
+    });
+
+    closePopupButton.addEventListener('click', function() {
+      // 팝업 닫기 및 원래 boardDetail 페이지로 리다이렉트
+      popupOverlay.style.display = 'none';
+      successPopup.style.display = 'none';
+      if (boardId) {
+        window.location.href = `/boardDetail.html?boardId=${boardId}`;
+      } else {
+        window.location.href = '/board.html'; // boardId가 없는 경우 기본 페이지로 이동
+      }
+    });
+  });
+</script>
+</body>
+</html>

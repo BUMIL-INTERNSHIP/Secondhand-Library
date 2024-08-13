@@ -1,19 +1,23 @@
+ALTER TABLE board DISABLE TRIGGER ALL;
+ALTER TABLE member DISABLE TRIGGER ALL;
 DELETE FROM board;
 DELETE FROM member;
+ALTER TABLE board ENABLE TRIGGER ALL;
+ALTER TABLE member ENABLE TRIGGER ALL;
 
 ALTER TABLE board ALTER COLUMN board_img TYPE TEXT;
 INSERT INTO member (member_id, member_name, email, outh_id, refresh_token)
 VALUES
-     (11, 'John Doe', 'johndoe@example.com', 1001, 'token123'),
-     (12, 'Jane Smith', 'janesmith@example.com', 1002, 'token456'),
-     (13, 'Alice Johnson', 'alicejohnson@example.com', 1003, 'token789'),
-     (14, 'Bob Brown', 'bobbrown@example.com', 1004, 'token012'),
-     (15, 'Charlie Davis', 'charliedavis@example.com', 1005, 'token345'),
-     (16, 'Diana Green', 'dianagreen@example.com', 1006, 'token678'),
-     (17, 'Edward Hall', 'edwardhall@example.com', 1007, 'token901'),
-     (18, 'Fiona White', 'fionawhite@example.com', 1008, 'token234'),
-     (19, 'George King', 'georgeking@example.com', 1009, 'token567'),
-     (20, 'Hannah Lee', 'hannahlee@example.com', 1010, 'token890');
+    (11, 'John Doe', 'johndoe@example.com', 1001, 'token123'),
+    (12, 'Jane Smith', 'janesmith@example.com', 1002, 'token456'),
+    (13, 'Alice Johnson', 'alicejohnson@example.com', 1003, 'token789'),
+    (14, 'Bob Brown', 'bobbrown@example.com', 1004, 'token012'),
+    (15, 'Charlie Davis', 'charliedavis@example.com', 1005, 'token345'),
+    (16, 'Diana Green', 'dianagreen@example.com', 1006, 'token678'),
+    (17, 'Edward Hall', 'edwardhall@example.com', 1007, 'token901'),
+    (18, 'Fiona White', 'fionawhite@example.com', 1008, 'token234'),
+    (19, 'George King', 'georgeking@example.com', 1009, 'token567'),
+    (20, 'Hannah Lee', 'hannahlee@example.com', 1010, 'token890');
 
 
 INSERT INTO "board" ("board_id", "book_id", "member_id", "board_title", "board_content", "board_img", "address", "price", "category")
