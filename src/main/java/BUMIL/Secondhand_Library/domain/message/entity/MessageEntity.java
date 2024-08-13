@@ -1,52 +1,54 @@
 package BUMIL.Secondhand_Library.domain.message.entity;
 
-import BUMIL.Secondhand_Library.domain.chatRoom.entity.ChatRoomEntity;
 import BUMIL.Secondhand_Library.domain.member.entity.MemberEntity;
-import BUMIL.Secondhand_Library.global.basic.BasicEntity;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Getter;
+import lombok.Data;
 import lombok.NoArgsConstructor;
+import org.hibernate.annotations.OnDelete;
+import org.hibernate.annotations.OnDeleteAction;
 
-import java.time.LocalDateTime;
-
-@Getter
-@NoArgsConstructor
+@Data
 @AllArgsConstructor
-@Builder
+@NoArgsConstructor
 @Entity
 @Table(name="message")
-public class MessageEntity extends BasicEntity {
-
+public class MessageEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long messageId;
+    private Long id;
 
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "chatRoom_id")
-    private ChatRoomEntity chatRoom;
+    @Column(nullable = false)
+    private String title;
+
+    @Column(nullable = false)
+    private String content;
+
+    @Column(nullable = false)
+    private boolean deletedBySender;
+
+    @Column(nullable = false)
+    private boolean deletedByReceiver;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "sender_id")
+    @OnDelete(action = OnDeleteAction.NO_ACTION)
     private MemberEntity sender;
 
-    private String content;
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "receiver_id")
+    @OnDelete(action = OnDeleteAction.NO_ACTION)
+    private MemberEntity receiver;
 
-    @Builder
-    public MessageEntity(LocalDateTime createdAt, LocalDateTime updatedAt, ChatRoomEntity chatRoom, MemberEntity sender, String content) {
-        super(createdAt, updatedAt);
-        this.chatRoom = chatRoom;
-        this.sender = sender;
-        this.content = content;
+    public void deleteBySender() {
+        this.deletedBySender = true;
     }
 
-    public static MessageEntity createMessage(ChatRoomEntity chatRoom,MemberEntity sender,String content){
-        return MessageEntity.builder()
-                .chatRoom(chatRoom)
-                .sender(sender)
-                .content(content)
-                .build();
+    public void deleteByReceiver() {
+        this.deletedByReceiver = true;
     }
 
+    public boolean isDeleted() {
+        return isDeletedBySender() && isDeletedByReceiver();
+    }
 }

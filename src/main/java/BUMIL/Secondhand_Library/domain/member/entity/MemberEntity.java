@@ -1,15 +1,10 @@
 package BUMIL.Secondhand_Library.domain.member.entity;
 
 import BUMIL.Secondhand_Library.domain.board.entity.BoardEntity;
-import BUMIL.Secondhand_Library.domain.chatRoom.entity.ChatRoomEntity;
-import BUMIL.Secondhand_Library.domain.message.entity.MessageEntity;
-import BUMIL.Secondhand_Library.global.basic.BasicEntity;
 import jakarta.persistence.*;
 import lombok.*;
 
 import java.util.List;
-import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
 @Data
 @NoArgsConstructor

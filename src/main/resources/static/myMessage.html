@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>마이페이지</title>
+    <title>받은 쪽지함 - 중고 서재</title>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Gowun+Batang&display=swap" rel="stylesheet">
@@ -71,36 +71,33 @@
             margin-bottom: 20px;
             color: #333;
         }
-        .bookshelf {
+        .messages {
             display: grid;
-            grid-template-columns: repeat(3, 1fr);
+            grid-template-columns: repeat(1, 1fr);
             gap: 20px;
         }
-        .book {
+        .message {
             background-color: white;
             padding: 10px;
             border-radius: 10px;
             box-shadow: 0 0 5px rgba(0, 0, 0, 0.1);
-            text-align: center;
+            text-align: left;
+            cursor: pointer;
         }
-        .book img {
-            width: 100%;
-            border-radius: 10px;
-            margin-bottom: 10px;
-        }
-        .book h3 {
+        .message h3 {
             margin: 10px 0;
             font-size: 1.1em;
         }
-        .book p {
+        .message p {
             font-size: 0.9em;
             color: #777;
         }
-        .book .favorite {
+        .message .delete {
             margin-top: 10px;
             color: red;
             font-size: 1.2em;
             cursor: pointer;
+            text-align: right;
         }
         .pagination {
             display: flex;
@@ -129,7 +126,7 @@
     </style>
     <script>
         let currentPage = 1; // 전역 변수로 currentPage를 정의합니다.
-        const booksPerPage = 6;
+        const messagesPerPage = 5;
 
         window.onload = function() {
             const accessToken = localStorage.getItem('accessToken');
@@ -149,7 +146,7 @@
                         <div>${user.memberName}</div>
                         <div>이메일: ${user.email}</div>
                     `;
-                        loadBooks(currentPage);
+                        loadMessages(currentPage);
                     })
                     .catch(error => console.error('Error:', error));
             } else {
@@ -157,10 +154,10 @@
             }
         };
 
-        function loadBooks(page) {
+        function loadMessages(page) {
             const accessToken = localStorage.getItem('accessToken');
             if (accessToken) {
-                fetch(`/mypage/bookshelf?page=${page}&size=${booksPerPage}`, {
+                fetch(`/messages/received?page=${page}&size=${messagesPerPage}`, {
                     method: 'GET',
                     headers: {
                         'Authorization': 'Bearer ' + accessToken,
@@ -169,26 +166,23 @@
                 })
                     .then(response => response.json())
                     .then(data => {
-                        console.log("Bookshelf data received: ", data);
-                        const bookshelf = document.querySelector('.bookshelf');
-                        bookshelf.innerHTML = '';
-                        if (data.bookDtoList && data.bookDtoList.length > 0) {
-                            data.bookDtoList.forEach(book => {
-                                const bookItem = document.createElement('div');
-                                bookItem.classList.add('book');
-                                bookItem.innerHTML = `
-                                <a href="/book/${book.bookId}">
-                                    <img src="${book.coverImg}" alt="Book cover">
-                                </a>
-                                <h3>${book.bookName}</h3>
-                                <p>${book.author}</p>
-                                <button class="favorite" onclick="deleteBook(${book.bookId})">삭제</button>
+                        const messagesContainer = document.querySelector('.messages');
+                        messagesContainer.innerHTML = '';
+                        if (data && data.length > 0) {
+                            data.forEach(message => {
+                                const messageItem = document.createElement('div');
+                                messageItem.classList.add('message');
+                                messageItem.innerHTML = `
+                                <h3>${message.title}</h3>
+                                <p>보낸 사람: ${message.senderName}</p>
+                                <p>${message.content}</p>
+                                <div class="delete" onclick="deleteMessage(${message.id})">삭제</div>
                             `;
-                                bookshelf.appendChild(bookItem);
+                                messagesContainer.appendChild(messageItem);
                             });
                             updatePagination(data.totalPages, page);
                         } else {
-                            bookshelf.innerHTML = '<p>서재에 책이 없습니다.</p>';
+                            messagesContainer.innerHTML = '<p>받은 쪽지가 없습니다.</p>';
                         }
                     })
                     .catch(error => console.error('Error:', error));
@@ -197,9 +191,9 @@
             }
         }
 
-        function deleteBook(bookId) {
+        function deleteMessage(messageId) {
             const accessToken = localStorage.getItem('accessToken');
-            fetch(`/mypage/bookshelf/${bookId}`, {
+            fetch(`/messages/received/${messageId}`, {
                 method: 'DELETE',
                 headers: {
                     'Authorization': 'Bearer ' + accessToken,
@@ -209,9 +203,9 @@
                 .then(response => response.json())
                 .then(data => {
                     if (data.success) {
-                        loadBooks(currentPage); // 책 삭제 후 현재 페이지의 책 목록을 다시 로드합니다.
+                        loadMessages(currentPage); // 쪽지 삭제 후 현재 페이지의 쪽지 목록을 다시 로드합니다.
                     } else {
-                        console.error('Failed to delete book');
+                        console.error('Failed to delete message');
                     }
                 })
                 .catch(error => console.error('Error:', error));
@@ -228,7 +222,7 @@
                 } else {
                     button.onclick = () => {
                         currentPage = i;
-                        loadBooks(i);
+                        loadMessages(i);
                     };
                 }
                 pagination.appendChild(button);
@@ -244,13 +238,13 @@
             <!-- 사용자 정보가 여기 표시됩니다 -->
         </div>
         <div class="info">
-            <a href="myMessage.html">내 쪽지함 바로가기</a>
+            <a href="/mypage">내 서재 바로가기</a>
         </div>
     </div>
     <div class="content">
-        <h2>나의 서재</h2>
-        <div class="bookshelf">
-            <!-- 책이 여기에 표시됩니다 -->
+        <h2>받은 쪽지함</h2>
+        <div class="messages">
+            <!-- 받은 쪽지가 여기에 표시됩니다 -->
         </div>
         <div class="pagination">
             <!-- 페이지 네비게이션 버튼이 여기에 표시됩니다 -->
