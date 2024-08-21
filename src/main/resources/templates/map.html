@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html>
+<html lang="ko">
 <head>
     <meta charset="utf-8">
     <title>지점 마커 지도</title>
@@ -9,26 +9,60 @@
             height: 100%;
             margin: 0;
             padding: 0;
+            overflow: hidden; /* 전체 화면 스크롤 금지 */
             display: flex;
-            flex-direction: row;
+            flex-direction: column; /* 세로로 플렉스 방향 변경 */
+        }
+        .header {
+            width: 100%;
+            padding: 10px;
+            background: #e6f7ff;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+            display: flex;
+            justify-content: center; /* 중앙 정렬 */
+            align-items: center;
+            position: relative; /* 상대 위치 */
+            z-index: 100;
+        }
+        .title {
+            font-size: 16px;
+            text-decoration: none;
+            color: #333;
+            font-weight: bold;
+            cursor: pointer;
+        }
+        #menu_button {
+            position: absolute;
+            left: 10px; /* 왼쪽에 메뉴 버튼 고정 */
+            background: #fff;
+            border: 1px solid #888;
+            border-radius: 4px;
+            padding: 10px;
+            cursor: pointer;
+            font-size: 14px;
         }
         .map_wrap {
             flex: 1;
             position: relative;
+            display: flex;
         }
         #map {
-            width: 100%;
+            flex: 1;
             height: 100%;
         }
         #menu_wrap {
             width: 300px;
             height: 100%;
-            overflow-y: auto;
+            overflow-y: auto; /* 리스트 스크롤 가능하게 설정 */
             background: rgba(255, 255, 255, 0.7);
             z-index: 1;
             font-size: 12px;
             border-left: 1px solid #888;
             box-sizing: border-box;
+            display: none; /* 처음에는 숨겨진 상태 */
+            position: absolute;
+            right: 0;
+            top: 0;
         }
         .bg_white {
             background: #fff;
@@ -43,6 +77,7 @@
         #placesList {
             padding-inline-start: 0;
             margin: 0px;
+            font-size: 14px; /* 리스트 글자 크기 확대 */
         }
         #placesList li {
             list-style: none;
@@ -77,24 +112,18 @@
         #placesList .info .tel {
             color: #009900;
         }
-<!--        #placesList .item .markerbg {-->
-<!--            float: left;-->
-<!--            width: 36px;-->
-<!--            height: 37px;-->
-<!--            margin: 10px 0 0 10px;-->
-<!--            background: url(https://t1.daumcdn.net/localimg/localimages/07/mapapidoc/marker_red.png) no-repeat;-->
-<!--            position: absolute;-->
-<!--            left: 0;-->
-<!--            top: 0;-->
-<!--        }-->
     </style>
 </head>
 <body>
+<div class="header">
+    <div id="menu_button">목록</div>
+    <a href="/" class="title">구제서재</a>
+</div>
 <div class="map_wrap">
     <div id="map"></div>
-</div>
-<div id="menu_wrap" class="bg_white">
-    <ul id="placesList"></ul>
+    <div id="menu_wrap" class="bg_white">
+        <ul id="placesList"></ul>
+    </div>
 </div>
 
 <script th:inline="javascript">
@@ -239,6 +268,16 @@
             el.removeChild(el.lastChild);
         }
     }
+
+    // 메뉴 버튼 클릭 시 리스트 메뉴를 표시하는 함수
+    document.getElementById('menu_button').onclick = function() {
+        var menuWrap = document.getElementById('menu_wrap');
+        if (menuWrap.style.display === 'none' || menuWrap.style.display === '') {
+            menuWrap.style.display = 'block';
+        } else {
+            menuWrap.style.display = 'none';
+        }
+    };
 </script>
 </body>
 </html>

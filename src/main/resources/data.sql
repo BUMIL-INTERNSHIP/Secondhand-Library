@@ -20,7 +20,7 @@ VALUES
     (20, 'Hannah Lee', 'hannahlee@example.com', 1010, 'token890');
 
 
-INSERT INTO "board" ("board_id", "book_id", "member_id", "board_title", "board_content", "board_img", "address", "price", "category")
+INSERT INTO board (board_id, book_id, member_id, board_title, board_content, board_img, address, price, category)
 VALUES
     (11, 1, 11, 'Great Book', 'good', 'https://image.aladin.co.kr/product/26942/84/cover/k582730818_1.jpg', '상인동', 15000, 'SELL'),
     (12, 2, 11, 'Amazing Read', 'good', 'https://image.aladin.co.kr/product/29858/98/cover/k432838027_1.jpg', '복현동', 20000, 'SELL'),

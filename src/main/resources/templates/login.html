@@ -19,6 +19,14 @@
             align-items: center;
             height: 100vh;
         }
+        .title {
+            font-size: 30px;
+            text-decoration: none;
+            color: #333;
+            font-weight: bold;
+            cursor: pointer;
+            margin-bottom: 100px;
+        }
         .container {
             background-color: #e6f7ff;
             padding: 2rem;
@@ -29,10 +37,6 @@
             max-width: 400px;
             border: 1px solid #b3daff;
         }
-        h2 {
-            margin-bottom: 1.5rem;
-            color: #333;
-        }
         #kakao-login-btn {
             background: url('/images/kakao_login_large_narrow.png') no-repeat center center;
             background-size: contain;
@@ -42,6 +46,7 @@
             height: 50px;
             cursor: pointer;
             transition: opacity 0.3s ease;
+            margin-top: 50px;
         }
         #kakao-login-btn:hover {
             opacity: 0.8;
@@ -54,7 +59,7 @@
 </head>
 <body>
 <div class="container">
-    <h2>카카오 로그인</h2>
+    <a href="/" class="title">구제서재</a>
     <button id="kakao-login-btn"></button>
 </div>
 <script type="text/javascript">

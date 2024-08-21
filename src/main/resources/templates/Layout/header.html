@@ -19,14 +19,13 @@
                 <line x1="4" x2="20" y1="18" y2="18"></line>
             </svg>
         </button>
-        <div class="profile">
-            <img th:src="@{/img/profile.png}" alt="Profile Image" class="profile-img" id="profile-img">
-            <p class="profile-email">로그인 정보를 가져오는 중...</p>
+        <div class="profile" id="profile-container">
+            <img th:src="@{/img/profile.png}" alt="Profile Image" class="profile-img" id="profile-img" style="display:none;">
+            <p class="profile-email" id="profile-email" style="display:none;">로그인 정보를 가져오는 중...</p>
             <div class="profile-buttons">
                 <a href="/login" class="profile-button" id="login-btn">로그인</a>
                 <a href="#" class="profile-button" id="logout-btn" style="display:none;">로그아웃</a>
-                <a href="/mypage" class="profile-button">마이페이지</a>
-                <a href="#" class="profile-button">개인정보 변경</a>
+                <a href="#" class="profile-button" id="mypage-btn">마이페이지</a>
             </div>
             <div class="navigation">
                 <a href="/board.html" class="navigation-button">중고거래 게시판</a>
@@ -37,10 +36,11 @@
     <script>
         window.onload = function() {
             const accessToken = localStorage.getItem('accessToken');
-            const profileEmail = document.querySelector('.profile-email');
+            const profileEmail = document.getElementById('profile-email');
             const profileImg = document.getElementById('profile-img');
             const loginBtn = document.getElementById('login-btn');
             const logoutBtn = document.getElementById('logout-btn');
+            const mypageBtn = document.getElementById('mypage-btn');
 
             if (accessToken) {
                 fetch('/api/userinfo', {
@@ -58,13 +58,17 @@
                 })
                 .then(user => {
                     profileEmail.innerText = `사용자 이메일: ${user.email}`;
+                    profileEmail.style.display = 'block';
                     profileImg.src = user.profileImage;  // 프로필 이미지를 설정
+                    profileImg.style.display = 'block';
                     loginBtn.style.display = 'none';
                     logoutBtn.style.display = 'block';
+
+                    // 마이페이지 버튼 정상 동작
+                    mypageBtn.href = "/mypage";
                 })
                 .catch(error => {
                     console.error('로그인 정보를 가져오는 도중 오류가 발생했습니다:', error);
-                    profileEmail.innerText = '로그인 오류';
                 });
 
                 logoutBtn.addEventListener('click', function() {
@@ -88,9 +92,18 @@
                     });
                 });
             } else {
-                profileEmail.innerText = '로그인되지 않음';
                 loginBtn.style.display = 'block';
                 logoutBtn.style.display = 'none';
+
+                // 프로필 이미지와 이메일을 숨김
+                profileImg.style.display = 'none';
+                profileEmail.style.display = 'none';
+
+                mypageBtn.addEventListener('click', function(event) {
+                    event.preventDefault();
+                    alert('로그인이 필요합니다. 로그인 페이지로 이동합니다.');
+                    window.location.href = '/login';
+                });
             }
         };
     </script>

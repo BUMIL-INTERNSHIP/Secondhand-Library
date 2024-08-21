@@ -33,8 +33,19 @@
             padding: 20px;
             display: flex;
             flex-direction: column;
-            align-items: center;
+            align-items: center; /* 프로필 사진은 가운데 정렬 */
             border-right: 1px solid #b3daff;
+            position: relative;
+        }
+        .title {
+            font-size: 24px;
+            font-weight: bold;
+            margin-bottom: 20px;
+            text-align: left;
+            cursor: pointer;
+            position: absolute;
+            top: 0;
+            left: 20px;
         }
         .profile-pic {
             width: 100px;
@@ -48,6 +59,7 @@
             color: #aaa;
             margin-bottom: 20px;
             overflow: hidden; /* 이미지가 프로필 영역에 맞게 잘리도록 설정 */
+            margin-top: 40px; /* 타이틀 아래로 공간 확보 */
         }
         .profile-pic img {
             width: 100%;
@@ -239,6 +251,7 @@
 <body>
 <div class="container">
     <div class="sidebar">
+        <div class="title" onclick="window.location.href='/'">구제서재</div> <!-- 홈으로 돌아가는 링크 추가 -->
         <div class="profile-pic">👤</div>
         <div class="info">
             <!-- 사용자 정보가 여기 표시됩니다 -->
