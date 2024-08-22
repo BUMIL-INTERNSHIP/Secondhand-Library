@@ -3,7 +3,7 @@ package BUMIL.Secondhand_Library.controller;
 import BUMIL.Secondhand_Library.domain.member.entity.MemberEntity;
 import BUMIL.Secondhand_Library.domain.member.repository.MemberRepository;
 import BUMIL.Secondhand_Library.domain.message.dto.MessageDto;
-import BUMIL.Secondhand_Library.domain.message.service.MessageService;
+import BUMIL.Secondhand_Library.service.MessageService;
 import BUMIL.Secondhand_Library.service.AuthService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -38,7 +38,7 @@ public class MessageController {
     public ResponseEntity<?> deleteReceivedMessage(@PathVariable("id") Long id, Authentication authentication) {
         MemberEntity member = authService.getUserInfo(authentication);
         messageService.deleteMessageByReceiver(id, member);
-        return new ResponseEntity<>("받은 쪽지를 삭제했습니다.", HttpStatus.OK);
+        return ResponseEntity.noContent().build();
     }
 
     @GetMapping("/messages/sent")
@@ -51,6 +51,6 @@ public class MessageController {
     public ResponseEntity<?> deleteSentMessage(@PathVariable("id") Long id, Authentication authentication) {
         MemberEntity member = authService.getUserInfo(authentication);
         messageService.deleteMessageBySender(id, member);
-        return new ResponseEntity<>("보낸 쪽지를 삭제했습니다.", HttpStatus.OK);
+        return ResponseEntity.noContent().build();
     }
 }
