@@ -29,4 +29,8 @@ VALUES
     (15, 5, 12, 'Fascinating Narrative', 'good', 'https://image.aladin.co.kr/product/24512/70/cover/k392630952_1.jpg', '대명동', 17000, 'BUY'),
     (16, 6, 14, 'Highly Educational', 'good', 'https://image.aladin.co.kr/product/31559/97/cover/k682832859_1.jpg', '상인2동', 21000, 'BUY'),
     (17, 7, 13, 'A Masterpiece', 'good.', 'https://image.aladin.co.kr/product/31222/5/cover/k562831250_2.jpg', '수성3동', 25000, 'BUY'),
-    (18, 8, 14, 'Thought-Provoking', 'good', 'https://image.aladin.co.kr/product/23651/80/cover/8936447696_1.jpg', '월성1동', 23000, 'BUY');
+    (18, 8, 14, 'Thought-Provoking', 'good', 'https://image.aladin.co.kr/product/23651/80/cover/8936447696_1.jpg', '월성1동', 23000, 'BUY'),
+    (19, 1, 11, 'Great Book', 'good', 'https://image.aladin.co.kr/product/26942/84/cover/k582730818_1.jpg', '상인동', 15000, 'SELL'),
+    (20, 1, 11, 'Great Book', 'good', 'https://image.aladin.co.kr/product/26942/84/cover/k582730818_1.jpg', '상인동', 15000, 'SELL'),
+    (21, 1, 11, 'Great Book', 'good', 'https://image.aladin.co.kr/product/26942/84/cover/k582730818_1.jpg', '상인동', 15000, 'SELL');
+

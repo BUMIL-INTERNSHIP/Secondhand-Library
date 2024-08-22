@@ -1,5 +1,6 @@
 package BUMIL.Secondhand_Library.controller;
 
+import BUMIL.Secondhand_Library.domain.board.entity.BoardEntity;
 import BUMIL.Secondhand_Library.domain.quote.DTO.BookFinderDTO;
 import BUMIL.Secondhand_Library.domain.book.DTO.MemberSelectionDTO;
 
@@ -11,6 +12,7 @@ import BUMIL.Secondhand_Library.domain.member.entity.MemberEntity;
 import BUMIL.Secondhand_Library.domain.member.repository.MemberRepository;
 import BUMIL.Secondhand_Library.domain.quote.DTO.QuoteDTO;
 import BUMIL.Secondhand_Library.domain.quote.entity.QuoteEntity;
+import BUMIL.Secondhand_Library.service.BoardService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
@@ -38,13 +40,20 @@ public class BookController {
     LibraryService libraryService;
 
     @Autowired
+    BoardService boardService;
+
+    @Autowired
     MemberRepository memberRepository;
 
-    @GetMapping("/{id}")
-    public String bookInfo(@PathVariable("id") Long id, Model model) {
-        BookEntity bookEntity = bookRepositoryService.getBook(id);
 
-        model.addAttribute(bookEntity);
+    @GetMapping("/{id}")
+    public String bookInfo(@PathVariable("id") Long id, Model model,
+                           @RequestParam(value = "page", defaultValue = "0") int page) {
+        BookEntity bookEntity = bookRepositoryService.getBook(id);
+        Page<BoardEntity> boardEntities = boardService.findAllSellPosts(bookEntity,page);
+
+        model.addAttribute("bookEntity",bookEntity);
+        model.addAttribute("boardEntities",boardEntities);
         return "Book/bookInfo";
     }
 

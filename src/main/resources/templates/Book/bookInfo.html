@@ -52,60 +52,40 @@
             </div>
         </div>
         <div class="book-list">
-        <div class="book-item">
+        <div class="book-item" th:each="board : ${boardEntities}">
                 <img
-                        src="/placeholder.svg"
+                        th:src="${board.boardImg}"
                         alt="Book cover"
                         width="80"
                         height="80"
                 />
                 <div class="book-description">
-                    <h3 class="book-item-title">
-                        어느 하루 눈부시지 않은 날이 없었다
-                    </h3>
-                    <p class="book-item-text">
-                        매일 하루 끝에 나와 같이 있어주고 알아주는 드라마 한 편이 있다면
-                        인생이 조금은 살만하다는 생각이 든다. 오늘 하루만큼은
-                        행복해졌음을 만끽할 수 있는 사람들에게 이 책을 권합니다. 지친
-                        삶에 위로가 되는 드라마 속 대사 한마디를 발견할 수 있을
-                        것입니다.
-                    </p>
+                    <h3 class="book-item-title" th:text="${board.boardTitle}"></h3>
+                    <p class="book-item-text" th:text=" ${'거래장소 : ' + board.address}"></p>
+                    <p class="book-item-text" th:text=" ${board.boardContent}"></p>
                 </div>
-                <button class="view-button">보기</button>
+            <a class="view-button" th:href="@{/boardDetail.html(boardId=${board.boardId})}">보기</a>
             </div>
-            <div class="book-item">
-                <img
-                        src="/placeholder.svg"
-                        alt="Book cover"
-                        width="80"
-                        height="80"
-                />
-                <div class="book-description">
-                    <h3 class="book-item-title">강인함의 힘</h3>
-                    <p class="book-item-text">
-                        성취감이란 무엇인가? 실패의 승리자는 누구인가? 강인한 자가 되어
-                        내일을 위한 힘을 받다. 더 큰 성취를 위한 새로운 과정을 다룬
-                        책입니다.
-                    </p>
-                </div>
-                <button class="view-button">보기</button>
-            </div>
-            <div class="book-item">
-                <img
-                        src="/placeholder.svg"
-                        alt="Book cover"
-                        width="80"
-                        height="80"
-                />
-                <div class="book-description">
-                    <h3 class="book-item-title">일산 초등학교 대백과</h3>
-                    <p class="book-item-text">
-                        모든 것이 이해하기 쉬운 예비 엄마를 위한 초등 교육을 위한 필수
-                        도서입니다. 애가 커서 받아온 도움들이 되었습니다!
-                    </p>
-                </div>
-                <button class="view-button">보기</button>
-            </div>
+        </div>
+        <div th:if="${boardEntities.totalPages > 1}">
+            <ul class="pagination">
+                <li class="pagination-item pagination-prev" th:classappend="${!boardEntities.hasPrevious()} ? 'pagination-disabled'">
+                    <a class="pagination-link" th:href="@{|?page=${boardEntities.number - 1}|}">
+                        <span>이전</span>
+                    </a>
+                </li>
+                <li th:each="page : ${#numbers.sequence(0, boardEntities.totalPages - 1)}"
+                    th:if="${page >= boardEntities.number - 5 and page <= boardEntities.number + 5}"
+                    th:classappend="${page == boardEntities.number} ? 'pagination-active'"
+                    class="pagination-item">
+                    <a th:text="${page + 1}" th:href="@{|?page=${page}|}" class="pagination-link"></a>
+                </li>
+                <li class="pagination-item pagination-next" th:classappend="${!boardEntities.hasNext()} ? 'pagination-disabled'">
+                    <a class="pagination-link" th:href="@{|?page=${boardEntities.number + 1}|}">
+                        <span>다음</span>
+                    </a>
+                </li>
+            </ul>
         </div>
     </section>
 </div>
