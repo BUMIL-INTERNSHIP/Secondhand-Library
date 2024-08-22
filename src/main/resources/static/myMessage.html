@@ -59,7 +59,7 @@
             color: #aaa;
             margin-bottom: 20px;
             overflow: hidden;
-            margin-top: 40px; /* 타이틀 아래로 공간 확보 */
+            margin-top: 40px;
         }
         .profile-pic img {
             width: 100%;
@@ -202,6 +202,39 @@
             background-color: rgba(0, 0, 0, 0.5);
             z-index: 999;
         }
+
+        /* 확인 팝업 스타일 */
+        .confirmation-popup,
+        .delete-confirmation-popup {
+            display: none;
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            padding: 20px;
+            background-color: white;
+            border: 1px solid #ddd;
+            border-radius: 10px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.2);
+            z-index: 1000;
+            text-align: center;
+            font-size: 1.2em;
+        }
+        .confirmation-popup button,
+        .delete-confirmation-popup button {
+            padding: 10px 20px;
+            font-size: 1.1em;
+            background-color: #007bff;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            margin-top: 10px;
+        }
+        .confirmation-popup button:hover,
+        .delete-confirmation-popup button:hover {
+            background-color: #0056b3;
+        }
     </style>
     <script>
         let currentPage = 1;
@@ -259,7 +292,7 @@
                             data.forEach(message => {
                                 const messageItem = document.createElement('div');
                                 messageItem.classList.add('message');
-                                messageItem.setAttribute('data-id', message.id); // 메시지 항목에 data-id 속성 추가
+                                messageItem.setAttribute('data-id', message.id);
                                 messageItem.innerHTML = `
                                 <h3>${message.title}</h3>
                                 <p>보낸 사람: ${message.senderName}</p>
@@ -293,13 +326,11 @@
             })
                 .then(response => {
                     if (response.ok) {
-                        // DOM에서 삭제된 메시지를 제거
                         const messageElement = document.querySelector(`.message[data-id="${messageId}"]`);
                         if (messageElement) {
                             messageElement.remove();
                         }
-                        // Pagination 업데이트 (필요한 경우)
-                        loadMessages(currentPage);
+                        showDeleteConfirmationPopup();
                     } else {
                         return response.json().then(err => {
                             console.error('Failed to delete message:', err.message);
@@ -307,6 +338,17 @@
                     }
                 })
                 .catch(error => console.error('Error:', error));
+        }
+
+        function showDeleteConfirmationPopup() {
+            const deleteConfirmationPopup = document.getElementById('deleteConfirmationPopup');
+            deleteConfirmationPopup.style.display = 'block';
+        }
+
+        function hideDeleteConfirmationPopup() {
+            const deleteConfirmationPopup = document.getElementById('deleteConfirmationPopup');
+            deleteConfirmationPopup.style.display = 'none';
+            loadMessages(currentPage);
         }
 
         function updatePagination(totalPages, currentPage) {
@@ -347,6 +389,17 @@
             replyPopup.style.display = 'none';
         }
 
+        function showConfirmationPopup() {
+            const confirmationPopup = document.getElementById('confirmationPopup');
+            confirmationPopup.style.display = 'block';
+        }
+
+        function hideConfirmationPopup() {
+            const confirmationPopup = document.getElementById('confirmationPopup');
+            confirmationPopup.style.display = 'none';
+            loadMessages(currentPage);
+        }
+
         function sendMessage() {
             const accessToken = localStorage.getItem('accessToken');
             const receiverName = document.getElementById('receiverName').value;
@@ -370,7 +423,7 @@
                 .then(response => {
                     if (response.ok) {
                         closeReplyPopup();
-                        loadMessages(currentPage);
+                        showConfirmationPopup();
                     } else {
                         return response.json().then(err => {
                             alert('오류가 발생했습니다: ' + err.message);
@@ -401,10 +454,9 @@
     </div>
 </div>
 
-<!-- 답장 팝업 -->
 <div class="popup-overlay" id="popupOverlay"></div>
 <div class="popup" id="replyPopup">
-    <h3>쪽지 답장하기</h3>
+    <h3>✉ 쪽지 답장하기 ✉</h3>
     <p>수신자: <input type="text" id="receiverName" readonly></p>
     <p>제목: <input type="text" id="title" readonly></p>
     <p>내용: <textarea id="content" rows="6" placeholder="내용을 입력하세요"></textarea></p>
@@ -412,6 +464,16 @@
         <button onclick="sendMessage()">보내기</button>
         <button onclick="closeReplyPopup()">닫기</button>
     </div>
+</div>
+
+<div class="confirmation-popup" id="confirmationPopup">
+    <p>✉ 답장을 보냈습니다 ✉</p>
+    <button onclick="hideConfirmationPopup()">확인</button>
+</div>
+
+<div class="delete-confirmation-popup" id="deleteConfirmationPopup">
+    <p>✉ 쪽지가 삭제되었습니다 ✉</p>
+    <button onclick="hideDeleteConfirmationPopup()">확인</button>
 </div>
 
 </body>
