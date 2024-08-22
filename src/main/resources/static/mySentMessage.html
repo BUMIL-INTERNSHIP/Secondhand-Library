@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>받은 쪽지함 - 중고 서재</title>
+    <title>보낸 쪽지함 - 중고 서재</title>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Gowun+Batang&display=swap" rel="stylesheet">
@@ -59,33 +59,21 @@
             color: #aaa;
             margin-bottom: 20px;
             overflow: hidden;
-            margin-top: 40px; /* 타이틀 아래로 공간 확보 */
+            margin-top: 40px;
         }
         .profile-pic img {
             width: 100%;
             height: 100%;
             object-fit: cover;
         }
-        .info-container {
+        .info {
             width: 100%;
-            margin-bottom: 20px;
-        }
-        .info-box {
             background-color: white;
             padding: 10px;
             border-radius: 10px;
             margin-bottom: 20px;
             box-shadow: 0 0 5px rgba(0, 0, 0, 0.1);
             text-align: center;
-        }
-        .info-box a {
-            display: block;
-            color: #007bff;
-            text-decoration: none;
-            font-weight: bold;
-        }
-        .info-box a:hover {
-            text-decoration: underline;
         }
         .content {
             width: 75%;
@@ -118,19 +106,12 @@
         }
         .message .actions {
             margin-top: 10px;
-            display: flex;
-            justify-content: space-between;
+            text-align: right;
         }
         .message .delete {
             color: red;
             font-size: 1.2em;
             cursor: pointer;
-        }
-        .message .reply {
-            color: #007bff;
-            font-size: 1.2em;
-            cursor: pointer;
-            text-decoration: underline;
         }
         .pagination {
             display: flex;
@@ -148,59 +129,13 @@
             background-color: #ccc;
             cursor: not-allowed;
         }
-
-        /* 팝업 스타일 */
-        .popup {
-            display: none;
-            position: fixed;
-            top: 50%;
-            left: 50%;
-            transform: translate(-50%, -50%);
-            padding: 30px;
-            background-color: white;
-            border: 1px solid #ddd;
-            border-radius: 10px;
-            box-shadow: 0 0 10px rgba(0, 0, 0, 0.2);
-            z-index: 1000;
-            text-align: center;
-            width: 500px;
-            font-size: 1.2em;
+        .info a {
+            color: #007bff;
+            text-decoration: none;
+            font-weight: bold;
         }
-        .popup p {
-            margin-bottom: 15px;
-        }
-        .popup input,
-        .popup textarea {
-            width: 90%;
-            padding: 10px;
-            font-size: 1.1em;
-            margin-bottom: 15px;
-            border: 1px solid #ddd;
-            border-radius: 5px;
-        }
-        .popup button {
-            padding: 10px 20px;
-            font-size: 1.1em;
-            background-color: #007bff;
-            color: white;
-            border: none;
-            border-radius: 5px;
-            cursor: pointer;
-            margin-top: 10px;
-            margin-right: 10px;
-        }
-        .popup button:hover {
-            background-color: #0056b3;
-        }
-        .popup-overlay {
-            display: none;
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background-color: rgba(0, 0, 0, 0.5);
-            z-index: 999;
+        .info a:hover {
+            text-decoration: underline;
         }
     </style>
     <script>
@@ -221,18 +156,10 @@
                     .then(user => {
                         const profilePicElement = document.querySelector('.profile-pic');
                         profilePicElement.innerHTML = `<img src="${user.profileImage}" alt="Profile Image">`;
-                        document.querySelector('.info-container').innerHTML = `
-                            <div class="info-box">
-                                <div>${user.memberName}</div>
-                                <div>이메일: ${user.email}</div>
-                            </div>
-                            <div class="info-box">
-                                <a href="/mypage">내 서재 바로가기</a>
-                            </div>
-                            <div class="info-box">
-                                <a href="/mySentMessage.html">내가 보낸 쪽지함</a>
-                            </div>
-                        `;
+                        document.querySelector('.info').innerHTML = `
+                        <div>${user.memberName}</div>
+                        <div>이메일: ${user.email}</div>
+                    `;
                         loadMessages(currentPage);
                     })
                     .catch(error => console.error('Error:', error));
@@ -244,7 +171,7 @@
         function loadMessages(page) {
             const accessToken = localStorage.getItem('accessToken');
             if (accessToken) {
-                fetch(`/messages/received?page=${page}&size=${messagesPerPage}`, {
+                fetch(`/messages/sent?page=${page}&size=${messagesPerPage}`, {
                     method: 'GET',
                     headers: {
                         'Authorization': 'Bearer ' + accessToken,
@@ -259,21 +186,20 @@
                             data.forEach(message => {
                                 const messageItem = document.createElement('div');
                                 messageItem.classList.add('message');
-                                messageItem.setAttribute('data-id', message.id); // 메시지 항목에 data-id 속성 추가
+                                messageItem.setAttribute('data-id', message.id);
                                 messageItem.innerHTML = `
                                 <h3>${message.title}</h3>
                                 <p>보낸 사람: ${message.senderName}</p>
                                 <p>${message.content}</p>
                                 <div class="actions">
                                     <div class="delete" onclick="deleteMessage(${message.id})">삭제</div>
-                                    <div class="reply" onclick="openReplyPopup('${message.senderName}', '${message.title}')">답장하기</div>
                                 </div>
                             `;
                                 messagesContainer.appendChild(messageItem);
                             });
                             updatePagination(data.totalPages, page);
                         } else {
-                            messagesContainer.innerHTML = '<p>받은 쪽지가 없습니다.</p>';
+                            messagesContainer.innerHTML = '<p>보낸 쪽지가 없습니다.</p>';
                         }
                     })
                     .catch(error => console.error('Error:', error));
@@ -284,7 +210,7 @@
 
         function deleteMessage(messageId) {
             const accessToken = localStorage.getItem('accessToken');
-            fetch(`/messages/received/${messageId}`, {
+            fetch(`/messages/sent/${messageId}`, {
                 method: 'DELETE',
                 headers: {
                     'Authorization': 'Bearer ' + accessToken,
@@ -326,93 +252,32 @@
                 pagination.appendChild(button);
             }
         }
-
-        function openReplyPopup(senderName, originalTitle) {
-            const popupOverlay = document.getElementById('popupOverlay');
-            const replyPopup = document.getElementById('replyPopup');
-            const receiverNameInput = document.getElementById('receiverName');
-            const titleInput = document.getElementById('title');
-
-            receiverNameInput.value = senderName;
-            titleInput.value = `RE: ${originalTitle}`;
-
-            popupOverlay.style.display = 'block';
-            replyPopup.style.display = 'block';
-        }
-
-        function closeReplyPopup() {
-            const popupOverlay = document.getElementById('popupOverlay');
-            const replyPopup = document.getElementById('replyPopup');
-            popupOverlay.style.display = 'none';
-            replyPopup.style.display = 'none';
-        }
-
-        function sendMessage() {
-            const accessToken = localStorage.getItem('accessToken');
-            const receiverName = document.getElementById('receiverName').value;
-            const title = document.getElementById('title').value;
-            const content = document.getElementById('content').value;
-
-            const messageDto = {
-                receiverName: receiverName,
-                title: title,
-                content: content
-            };
-
-            fetch("/messages", {
-                method: "POST",
-                headers: {
-                    'Content-Type': 'application/json',
-                    'Authorization': 'Bearer ' + accessToken
-                },
-                body: JSON.stringify(messageDto)
-            })
-                .then(response => {
-                    if (response.ok) {
-                        closeReplyPopup();
-                        loadMessages(currentPage);
-                    } else {
-                        return response.json().then(err => {
-                            alert('오류가 발생했습니다: ' + err.message);
-                        });
-                    }
-                })
-                .catch(error => console.error('Error:', error));
-        }
     </script>
 </head>
 <body>
 <div class="container">
     <div class="sidebar">
-        <div class="title" onclick="window.location.href='/'">구제서재</div> <!-- 홈으로 돌아가는 링크 추가 -->
+        <div class="title" onclick="window.location.href='/'">구제서재</div>
         <div class="profile-pic">👤</div>
-        <div class="info-container">
-            <!-- 사용자 정보 및 링크 컨테이너 -->
+        <div class="info">
+            <!-- 사용자 정보가 여기 표시됩니다 -->
+        </div>
+        <div class="info">
+            <a href="/mypage">내 서재 바로가기</a>
+        </div>
+        <div class="info">
+            <a href="/myMessage.html">내가 받은 쪽지함</a>
         </div>
     </div>
     <div class="content">
-        <h2>받은 쪽지함</h2>
+        <h2>보낸 쪽지함</h2>
         <div class="messages">
-            <!-- 받은 쪽지가 여기에 표시됩니다 -->
+            <!-- 보낸 쪽지가 여기에 표시됩니다 -->
         </div>
         <div class="pagination">
             <!-- 페이지 네비게이션 버튼이 여기에 표시됩니다 -->
         </div>
     </div>
 </div>
-
-<!-- 답장 팝업 -->
-<div class="popup-overlay" id="popupOverlay"></div>
-<div class="popup" id="replyPopup">
-    <h3>쪽지 답장하기</h3>
-    <p>수신자: <input type="text" id="receiverName" readonly></p>
-    <p>제목: <input type="text" id="title" readonly></p>
-    <p>내용: <textarea id="content" rows="6" placeholder="내용을 입력하세요"></textarea></p>
-    <div>
-        <button onclick="sendMessage()">보내기</button>
-        <button onclick="closeReplyPopup()">닫기</button>
-    </div>
-</div>
-
 </body>
 </html>
