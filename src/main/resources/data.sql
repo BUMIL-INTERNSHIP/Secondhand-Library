@@ -22,6 +22,7 @@ VALUES
 
 INSERT INTO "board" ("board_id", "book_id", "member_id", "board_title", "board_content", "board_img", "address", "price", "category")
 VALUES
+
     (11, 1, 111, '아버지의 해방일지 :정지아 장편소설', '사게 팔아요~~', 'https://image.aladin.co.kr/product/26942/84/cover/k582730818_1.jpg', '상인동', 15000, 'SELL'),
     (12, 2, 111, '흔한남매', '상태 좋습니다', 'https://image.aladin.co.kr/product/29858/98/cover/k432838027_1.jpg', '복현동', 20000, 'SELL'),
     (13, 3, 112, '달러구트 꿈 백화점 :이미예 장편소설', '재미있게 읽은 책 입니다.', 'https://image.aladin.co.kr/product/30048/51/cover/8936438832_1.jpg', '범어동', 18000, 'SELL'),
@@ -37,3 +38,4 @@ VALUES
     (23, 80, 119, '긴긴밤', '소장하고 싶은 책입니다. 파는 사람 있을까요?', 'https://image.aladin.co.kr/product/26302/71/cover/8954677150_1.jpg', '대명동', 17000, 'BUY'),
     (25, 63, 113, '나미야 잡화점의 기적 :히가시노 게이고 장편소설 ', '이 책 유명한데 혹시 파는 사람 있나요?', 'http://image.aladin.co.kr/product/15848/6/cover/k622533431_1.jpg', '수성3동', 25000, 'BUY'),
     (26, 70, 114, '죽이고 싶은 아이 :이꽃님 장편소설 ', '구매원합니다.', 'https://image.aladin.co.kr/product/27211/83/cover/k422732197_1.jpg', '월성1동', 23000, 'BUY');
+

@@ -13,9 +13,16 @@ import BUMIL.Secondhand_Library.domain.member.entity.MemberEntity;
 import BUMIL.Secondhand_Library.domain.member.repository.MemberRepository;
 import BUMIL.Secondhand_Library.global.CategoryEnum;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.ui.Model;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 
 import java.util.List;
 import java.util.Optional;
@@ -151,6 +158,8 @@ public class BoardService {
         return boardRepository.save(board);
     }
 
-
-
+    public Page<BoardEntity> findAllSellPosts(BookEntity bookEntity , int page) {
+        Pageable pageable = PageRequest.of(page, 3);
+        return boardRepository.findAllByBookAndCategory(pageable,bookEntity, CategoryEnum.SELL);
+    }
 }
