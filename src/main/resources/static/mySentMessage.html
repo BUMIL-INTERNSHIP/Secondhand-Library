@@ -137,6 +137,36 @@
         .info a:hover {
             text-decoration: underline;
         }
+
+        /* 삭제 후 확인 팝업 스타일 */
+        .delete-confirmation-popup {
+            display: none;
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            padding: 20px;
+            background-color: white;
+            border: 1px solid #ddd;
+            border-radius: 10px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.2);
+            z-index: 1000;
+            text-align: center;
+            font-size: 1.2em;
+        }
+        .delete-confirmation-popup button {
+            padding: 10px 20px;
+            font-size: 1.1em;
+            background-color: #007bff;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            margin-top: 10px;
+        }
+        .delete-confirmation-popup button:hover {
+            background-color: #0056b3;
+        }
     </style>
     <script>
         let currentPage = 1;
@@ -224,8 +254,7 @@
                         if (messageElement) {
                             messageElement.remove();
                         }
-                        // Pagination 업데이트 (필요한 경우)
-                        loadMessages(currentPage);
+                        showDeleteConfirmationPopup(); // 삭제 확인 팝업 표시
                     } else {
                         return response.json().then(err => {
                             console.error('Failed to delete message:', err.message);
@@ -233,6 +262,17 @@
                     }
                 })
                 .catch(error => console.error('Error:', error));
+        }
+
+        function showDeleteConfirmationPopup() {
+            const deleteConfirmationPopup = document.getElementById('deleteConfirmationPopup');
+            deleteConfirmationPopup.style.display = 'block';
+        }
+
+        function hideDeleteConfirmationPopup() {
+            const deleteConfirmationPopup = document.getElementById('deleteConfirmationPopup');
+            deleteConfirmationPopup.style.display = 'none';
+            loadMessages(currentPage); // 메시지 목록 갱신
         }
 
         function updatePagination(totalPages, currentPage) {
@@ -279,5 +319,12 @@
         </div>
     </div>
 </div>
+
+<!-- 삭제 후 확인 팝업 -->
+<div class="delete-confirmation-popup" id="deleteConfirmationPopup">
+    <p>✉ 쪽지가 삭제되었습니다 ✉</p>
+    <button onclick="hideDeleteConfirmationPopup()">확인</button>
+</div>
+
 </body>
 </html>

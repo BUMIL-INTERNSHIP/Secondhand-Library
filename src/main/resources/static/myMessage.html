@@ -235,6 +235,24 @@
         .delete-confirmation-popup button:hover {
             background-color: #0056b3;
         }
+
+        /* 레이블 정렬 */
+        .popup form {
+            display: flex;
+            flex-direction: column;
+            align-items: flex-start;
+            gap: 10px;
+        }
+        .popup label {
+            font-weight: bold;
+            margin-bottom: 5px;
+        }
+
+        /* 버튼 중앙 정렬 */
+        .popup form div {
+            text-align: center;
+            width: 100%;
+        }
     </style>
     <script>
         let currentPage = 1;
@@ -457,13 +475,21 @@
 <div class="popup-overlay" id="popupOverlay"></div>
 <div class="popup" id="replyPopup">
     <h3>✉ 쪽지 답장하기 ✉</h3>
-    <p>수신자: <input type="text" id="receiverName" readonly></p>
-    <p>제목: <input type="text" id="title" readonly></p>
-    <p>내용: <textarea id="content" rows="6" placeholder="내용을 입력하세요"></textarea></p>
-    <div>
-        <button onclick="sendMessage()">보내기</button>
-        <button onclick="closeReplyPopup()">닫기</button>
-    </div>
+    <form>
+        <label for="receiverName">수신자:</label>
+        <input type="text" id="receiverName" readonly>
+
+        <label for="title">제목:</label>
+        <input type="text" id="title" readonly>
+
+        <label for="content">내용:</label>
+        <textarea id="content" rows="6" placeholder="내용을 입력하세요"></textarea>
+
+        <div>
+            <button type="button" onclick="sendMessage()">보내기</button>
+            <button type="button" onclick="closeReplyPopup()">닫기</button>
+        </div>
+    </form>
 </div>
 
 <div class="confirmation-popup" id="confirmationPopup">
