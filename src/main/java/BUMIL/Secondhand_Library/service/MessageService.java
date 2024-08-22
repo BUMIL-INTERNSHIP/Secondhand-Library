@@ -1,4 +1,4 @@
-package BUMIL.Secondhand_Library.domain.message.service;
+package BUMIL.Secondhand_Library.service;
 
 import BUMIL.Secondhand_Library.domain.member.entity.MemberEntity;
 import BUMIL.Secondhand_Library.domain.member.repository.MemberRepository;
@@ -7,11 +7,15 @@ import BUMIL.Secondhand_Library.domain.message.entity.MessageEntity;
 import BUMIL.Secondhand_Library.domain.message.repository.MessageRepository;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
 import java.util.List;
 
+@Slf4j
 @RequiredArgsConstructor
 @Service
 public class MessageService {
@@ -57,6 +61,13 @@ public class MessageService {
     // 받은 편지 삭제
     @Transactional
     public Object deleteMessageByReceiver(Long id, MemberEntity member) {
+
+        // Logger 설정
+        Logger logger = LoggerFactory.getLogger(this.getClass());
+
+        // 로그 출력
+        logger.info("Received ID: " + id);
+
         MessageEntity message = messageRepository.findById(id).orElseThrow(() -> {
             return new IllegalArgumentException("메시지를 찾을 수 없습니다.");
         });
@@ -96,6 +107,7 @@ public class MessageService {
     // 보낸 편지 삭제
     @Transactional
     public Object deleteMessageBySender(Long id, MemberEntity member) {
+
         MessageEntity message = messageRepository.findById(id).orElseThrow(() -> {
             return new IllegalArgumentException("메시지를 찾을 수 없습니다.");
         });

@@ -20,10 +20,33 @@
       min-height: 100vh;
       font-size: 18px;
     }
-    .container {
+    .container-wrapper {
+      position: relative;
       width: 90%;
       max-width: 1300px;
       margin: 20px;
+    }
+    .back-button {
+      position: absolute;
+      top: -55px;
+      left: 8px;
+      padding: 10px 20px;
+      font-size: 16px;
+      font-family: 'Gowun Batang', serif;
+      background-color: #007bff;
+      color: white;
+      border: none;
+      border-radius: 5px;
+      cursor: pointer;
+      outline: none;
+      transition: background-color 0.3s ease;
+      z-index: 10;
+    }
+    .back-button:hover {
+      background-color: #0056b3;
+    }
+    .container {
+      width: 100%;
       padding: 20px;
       background-color: #fff;
       border: 1px solid #ddd;
@@ -101,19 +124,23 @@
   </style>
 </head>
 <body>
-<div class="container">
-  <div class="image-container">
-    <img id="boardImg" src="" alt="책 이미지">
-  </div>
-  <div class="details-container">
-    <h1 id="boardTitle">게시물 제목</h1>
-    <p id="bookName">책 제목</p>
-    <p id="memberName">작성자</p>
-    <p id="boardContent">게시물 내용</p>
-    <p class="price" id="price">가격: 0원</p>
-    <p class="address" id="address">주소: 주소 정보</p>
-    <div class="buttons-container">
-      <button class="chat-button" id="connect">쪽지 보내기</button>
+<div class="container-wrapper">
+  <!-- 뒤로가기 버튼 -->
+  <button class="back-button" onclick="window.location.href='/board.html'">뒤로가기</button>
+  <div class="container">
+    <div class="image-container">
+      <img id="boardImg" src="" alt="책 이미지">
+    </div>
+    <div class="details-container">
+      <h1 id="boardTitle">게시물 제목</h1>
+      <p id="bookName">책 제목</p>
+      <p id="memberName">작성자</p>
+      <p id="boardContent">게시물 내용</p>
+      <p class="price" id="price">가격: 0원</p>
+      <p class="address" id="address">주소: 주소 정보</p>
+      <div class="buttons-container">
+        <button class="chat-button" id="connect">쪽지 보내기</button>
+      </div>
     </div>
   </div>
 </div>
@@ -131,42 +158,48 @@
     const accessToken = localStorage.getItem('accessToken');
 
     if (!accessToken) {
-      console.error('액세스 토큰이 없습니다.');
-      return;
+      alert('로그인이 필요합니다');
+      window.location.href = '/login';
+    } else {
+
+      fetch(`/boards/${boardId}`, {
+        headers: {
+          'Authorization': 'Bearer ' + accessToken
+        }
+      })
+              .then(response => response.json())
+              .then(data => {
+                if (!data) {
+                  console.error('데이터가 비어 있습니다.');
+                  return;
+                }
+
+                document.getElementById('boardImg').src = data.boardImg || 'default-image.jpg';
+                document.getElementById('boardTitle').textContent = data.boardTitle || '제목 정보 없음';
+                document.getElementById('bookName').textContent = `책 제목: ${data.bookName || '정보 없음'}`;
+                document.getElementById('memberName').textContent = `작성자: ${data.memberName || '정보 없음'}`;
+                document.getElementById('boardContent').textContent = data.boardContent || '내용 정보 없음';
+                document.getElementById('price').textContent = `가격: ${data.price ? data.price + '원' : '가격 정보 없음'}`;
+                document.getElementById('address').textContent = `주소: ${data.address || '주소 정보 없음'}`;
+
+                document.getElementById('connect').addEventListener('click', function () {
+                  const accessToken = localStorage.getItem('accessToken');
+                  if (!accessToken) {
+                    alert('로그인이 필요합니다');
+                    window.location.href = '/login.html';
+                  } else {
+                    // 로그인한 경우
+                    window.location.href = '/sendmessage.html';
+                  }
+                });
+
+              })
+              .catch(error => {
+                console.error('데이터를 가져오는 중 오류가 발생했습니다:', error);
+              });
     }
 
-    fetch(`/boards/${boardId}`, {
-      headers: {
-        'Authorization': 'Bearer ' + accessToken
-      }
-    })
-            .then(response => response.json())
-            .then(data => {
-              if (!data) {
-                console.error('데이터가 비어 있습니다.');
-                return;
-              }
-
-              document.getElementById('boardImg').src = data.boardImg || 'default-image.jpg';
-              document.getElementById('boardTitle').textContent = data.boardTitle || '제목 정보 없음';
-              document.getElementById('bookName').textContent = `책 제목: ${data.bookName || '정보 없음'}`;
-              document.getElementById('memberName').textContent = `작성자: ${data.memberName || '정보 없음'}`;
-              document.getElementById('boardContent').textContent = data.boardContent || '내용 정보 없음';
-              document.getElementById('price').textContent = `가격: ${data.price ? data.price + '원' : '가격 정보 없음'}`;
-              document.getElementById('address').textContent = `주소: ${data.address || '주소 정보 없음'}`;
-
-              // 쪽지 보내기 버튼에 클릭 이벤트 추가
-              document.getElementById('connect').addEventListener('click', function() {
-                // 단순히 sendmessage.html로 이동
-                window.location.href = '/sendmessage.html';
-              });
-
-            })
-            .catch(error => {
-              console.error('데이터를 가져오는 중 오류가 발생했습니다:', error);
-            });
   });
 </script>
 </body>
 </html>
-
