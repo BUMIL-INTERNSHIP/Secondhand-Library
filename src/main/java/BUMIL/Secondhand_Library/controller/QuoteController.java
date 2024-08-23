@@ -57,10 +57,8 @@ public class QuoteController {
 
     @PostMapping("/{bookId}/quoteForm")
     public String createQuote(@PathVariable("bookId") Long id , QuoteDTO quoteDTO){
-        System.out.println(quoteDTO.getQuote());
-        System.out.println(quoteDTO.getAuthor());
         quoteService.createQuote(id , quoteDTO.getAuthor(), quoteDTO.getQuote());
-        return  "Quote/BookFinder"; //나중에 마이페이지로 이동
+        return  "redirect:/Quote/QuoteShow"; //나중에 마이페이지로 이동
     }
 
     @GetMapping("/quoteShow")
